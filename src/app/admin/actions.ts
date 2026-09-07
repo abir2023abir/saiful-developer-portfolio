@@ -6,6 +6,7 @@ import {
   createSession,
   currentAdmin,
   destroySession,
+  isConfigured,
   verifyCredentials,
 } from "@/lib/auth";
 import { readContent, updateContent } from "@/lib/content";
@@ -53,6 +54,15 @@ export async function login(
 
   if (!username || !password)
     return { error: "Enter your username and password." };
+
+  // Without the env vars every attempt fails as a plain mismatch, which sends
+  // you hunting for a typo that is not there. Name the real problem instead.
+  if (!isConfigured()) {
+    return {
+      error:
+        "This deployment has no admin credentials set. Add ADMIN_USER, ADMIN_PASSWORD_HASH and AUTH_SECRET in the host's environment variables, then redeploy.",
+    };
+  }
 
   try {
     if (!verifyCredentials(username, password)) {

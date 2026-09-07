@@ -29,6 +29,11 @@ function passwordMatches(password: string, stored: string): boolean {
   return got.length === expected.length && timingSafeEqual(got, expected);
 }
 
+/** True when the admin credentials are present in the environment at all. */
+export function isConfigured(): boolean {
+  return Boolean(process.env.ADMIN_USER && process.env.ADMIN_PASSWORD_HASH && process.env.AUTH_SECRET);
+}
+
 export function verifyCredentials(username: string, password: string): boolean {
   const user = process.env.ADMIN_USER;
   const hash = process.env.ADMIN_PASSWORD_HASH;
