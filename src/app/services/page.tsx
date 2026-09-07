@@ -8,7 +8,8 @@ import { readContent } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Services",
-  description: "Full-stack builds, e-commerce, API and database design, auth, realtime and performance.",
+  description:
+    "Full-stack builds, e-commerce, API and database design, auth, realtime and performance.",
 };
 
 export default async function ServicesPage() {
@@ -34,7 +35,9 @@ export default async function ServicesPage() {
             className="group mt-10 inline-flex items-center gap-3 bg-ink px-8 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-brand"
           >
             Start a conversation
-            <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+            <span className="transition-transform duration-300 group-hover:translate-x-1">
+              →
+            </span>
           </Link>
         </Reveal>
       </section>

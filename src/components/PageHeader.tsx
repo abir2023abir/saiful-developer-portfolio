@@ -24,7 +24,9 @@ export default function PageHeader({
       </Reveal>
       {lede && (
         <Reveal delay={0.08}>
-          <p className="mt-8 max-w-xl text-[0.95rem] leading-relaxed text-black/65">{lede}</p>
+          <p className="mt-8 max-w-xl text-[0.95rem] leading-relaxed text-black/65">
+            {lede}
+          </p>
         </Reveal>
       )}
     </header>

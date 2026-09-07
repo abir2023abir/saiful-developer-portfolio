@@ -10,7 +10,12 @@ export function SiteForm({ site }: { site: SiteSettings }) {
       <div className="grid gap-6 sm:grid-cols-2">
         <Field label="Name" name="name" defaultValue={site.name} required />
         <Field label="Role" name="role" defaultValue={site.role} />
-        <Field label="Email" name="email" type="email" defaultValue={site.email} />
+        <Field
+          label="Email"
+          name="email"
+          type="email"
+          defaultValue={site.email}
+        />
         <Field label="Location" name="location" defaultValue={site.location} />
       </div>
 
@@ -29,7 +34,12 @@ export function SiteForm({ site }: { site: SiteSettings }) {
         hint="Separate with | — every second part is greyed, and the line wraps after it"
       />
 
-      <Field label="About paragraph" name="aboutBody" rows={4} defaultValue={site.aboutBody} />
+      <Field
+        label="About paragraph"
+        name="aboutBody"
+        rows={4}
+        defaultValue={site.aboutBody}
+      />
 
       <Field
         label="Tech marquee"
@@ -40,7 +50,12 @@ export function SiteForm({ site }: { site: SiteSettings }) {
       />
 
       <div className="grid gap-6 sm:grid-cols-3">
-        <Field label="Upwork profile" name="upwork" defaultValue={site.upwork} placeholder="https://www.upwork.com/freelancers/…" />
+        <Field
+          label="Upwork profile"
+          name="upwork"
+          defaultValue={site.upwork}
+          placeholder="https://www.upwork.com/freelancers/…"
+        />
         <Field label="GitHub" name="github" defaultValue={site.github} />
         <Field label="LinkedIn" name="linkedin" defaultValue={site.linkedin} />
       </div>
@@ -59,22 +74,51 @@ export function HighlightsForm({
     <ActionForm action={saveHighlights} className="space-y-8">
       <div className="grid gap-6 sm:grid-cols-2">
         {stats.map((s, i) => (
-          <fieldset key={i} className="space-y-4 border border-black/10 bg-white p-5">
+          <fieldset
+            key={i}
+            className="space-y-4 border border-black/10 bg-white p-5"
+          >
             <legend className="px-2 text-sm font-semibold">Stat {i + 1}</legend>
-            <Field label="Label" name={`stat-label-${i}`} defaultValue={s.label} />
-            <Field label="Value" name={`stat-value-${i}`} defaultValue={s.value} />
-            <Field label="Note" name={`stat-body-${i}`} rows={3} defaultValue={s.body} />
+            <Field
+              label="Label"
+              name={`stat-label-${i}`}
+              defaultValue={s.label}
+            />
+            <Field
+              label="Value"
+              name={`stat-value-${i}`}
+              defaultValue={s.value}
+            />
+            <Field
+              label="Note"
+              name={`stat-body-${i}`}
+              rows={3}
+              defaultValue={s.body}
+            />
           </fieldset>
         ))}
       </div>
 
       <fieldset className="space-y-4 border border-black/10 bg-white p-5">
         <legend className="px-2 text-sm font-semibold">Testimonial</legend>
-        <Field label="Quote" name="quote" rows={3} defaultValue={testimonial.quote} />
+        <Field
+          label="Quote"
+          name="quote"
+          rows={3}
+          defaultValue={testimonial.quote}
+        />
         <div className="grid gap-4 sm:grid-cols-3">
           <Field label="Name" name="author" defaultValue={testimonial.name} />
-          <Field label="Role" name="authorRole" defaultValue={testimonial.role} />
-          <Field label="Rating" name="rating" defaultValue={testimonial.rating} />
+          <Field
+            label="Role"
+            name="authorRole"
+            defaultValue={testimonial.role}
+          />
+          <Field
+            label="Rating"
+            name="rating"
+            defaultValue={testimonial.rating}
+          />
         </div>
       </fieldset>
     </ActionForm>

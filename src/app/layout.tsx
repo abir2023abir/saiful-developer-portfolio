@@ -42,7 +42,11 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { site } = await readContent();
 
   const person = {
@@ -68,8 +72,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {children}
         <script
           type="application/ld+json"
-          // Server-rendered from our own content file, not from user input.
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(person) }}
+          // Every field here is editable in the admin panel, so an unescaped
+          // "</script>" in any of them would break out of the tag.
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(person).replace(/</g, "\u003c"),
+          }}
         />
       </body>
     </html>

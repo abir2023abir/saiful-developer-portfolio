@@ -30,7 +30,13 @@ export function Marquee({ stack }: { stack: string[] }) {
   );
 }
 
-export function SectionLabel({ children, dark = false }: { children: React.ReactNode; dark?: boolean }) {
+export function SectionLabel({
+  children,
+  dark = false,
+}: {
+  children: React.ReactNode;
+  dark?: boolean;
+}) {
   return (
     <span
       className={`eyebrow inline-flex items-center gap-2 px-3 py-1.5 ${
@@ -66,7 +72,10 @@ export function Impact({
         <Reveal>
           <h2 className="display text-[11vw] leading-[0.85] sm:text-[6.5rem]">
             {parts.map((part, i) => (
-              <span key={part + i} className={i % 2 ? "text-black/45" : undefined}>
+              <span
+                key={part + i}
+                className={i % 2 ? "text-black/45" : undefined}
+              >
                 {part}
                 {i % 2 === 1 && i < parts.length - 1 ? <br /> : " "}
               </span>
@@ -75,7 +84,9 @@ export function Impact({
         </Reveal>
 
         <Reveal delay={0.1}>
-          <p className="max-w-md text-[0.95rem] leading-relaxed text-black/65">{body}</p>
+          <p className="max-w-md text-[0.95rem] leading-relaxed text-black/65">
+            {body}
+          </p>
         </Reveal>
       </div>
 
@@ -88,7 +99,9 @@ export function Impact({
                   <span className="text-brand-ink">✳</span> {s.label}
                 </span>
                 <p className="display mt-8 text-6xl sm:text-7xl">{s.value}</p>
-                <p className="mt-4 text-sm leading-relaxed text-black/55">{s.body}</p>
+                <p className="mt-4 text-sm leading-relaxed text-black/55">
+                  {s.body}
+                </p>
               </div>
             </Reveal>
           ))}
@@ -110,7 +123,9 @@ export function Impact({
                 <span className="text-brand-ink" aria-hidden>
                   ★★★★★
                 </span>
-                <span className="text-sm font-semibold">{testimonial.rating}</span>
+                <span className="text-sm font-semibold">
+                  {testimonial.rating}
+                </span>
               </div>
               <blockquote className="mt-5 max-w-xl text-lg leading-relaxed text-black/80">
                 &ldquo;{testimonial.quote}&rdquo;
@@ -120,8 +135,12 @@ export function Impact({
                   ✳
                 </span>
                 <span className="leading-tight">
-                  <span className="block text-sm font-semibold">{testimonial.name}</span>
-                  <span className="block text-xs text-black/55">{testimonial.role}</span>
+                  <span className="block text-sm font-semibold">
+                    {testimonial.name}
+                  </span>
+                  <span className="block text-xs text-black/55">
+                    {testimonial.role}
+                  </span>
                 </span>
               </figcaption>
             </div>
@@ -142,7 +161,13 @@ export function ProjectGrid({ projects }: { projects: Project[] }) {
   );
 }
 
-export function Work({ projects, limit }: { projects: Project[]; limit?: number }) {
+export function Work({
+  projects,
+  limit,
+}: {
+  projects: Project[];
+  limit?: number;
+}) {
   const shown = limit ? projects.slice(0, limit) : projects;
 
   return (
@@ -168,7 +193,9 @@ export function Work({ projects, limit }: { projects: Project[]; limit?: number 
               className="group inline-flex items-center gap-3 border border-ink px-8 py-4 text-xs font-semibold uppercase tracking-[0.16em] transition-colors hover:bg-ink hover:text-white"
             >
               All {projects.length} projects
-              <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+              <span className="transition-transform duration-300 group-hover:translate-x-1">
+                →
+              </span>
             </Link>
           </div>
         </Reveal>
@@ -179,19 +206,24 @@ export function Work({ projects, limit }: { projects: Project[]; limit?: number 
 
 export function Services({ services }: { services: Service[] }) {
   return (
-    <section id="services" className="bg-ink px-6 py-24 text-white sm:px-10 sm:py-32">
+    <section
+      id="services"
+      className="bg-ink px-6 py-24 text-white sm:px-10 sm:py-32"
+    >
       <div className="grid gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-end">
         <Reveal>
-          <SectionLabel dark>Services ({String(services.length).padStart(2, "0")})</SectionLabel>
+          <SectionLabel dark>
+            Services ({String(services.length).padStart(2, "0")})
+          </SectionLabel>
           <h2 className="display mt-6 text-[12vw] leading-[0.85] sm:text-[6rem]">
             What I <span className="text-white/35">do.</span>
           </h2>
         </Reveal>
         <Reveal delay={0.1}>
           <p className="max-w-md text-[0.95rem] leading-relaxed text-white/55">
-            A short list, done properly, rather than a long one done once. If your problem is not on
-            it, say so — I would rather tell you it is not my work than take it and learn on your
-            budget.
+            A short list, done properly, rather than a long one done once. If
+            your problem is not on it, say so — I would rather tell you it is
+            not my work than take it and learn on your budget.
           </p>
         </Reveal>
       </div>
@@ -226,29 +258,49 @@ export function Footer({ content }: { content: Content }) {
         </div>
         <ul className="flex flex-wrap gap-6 text-sm">
           <li>
-            <a href={site.upwork} target="_blank" rel="noopener noreferrer" className="text-white/60 transition-colors hover:text-white">
+            <a
+              href={site.upwork}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/60 transition-colors hover:text-white"
+            >
               Upwork ↗
             </a>
           </li>
           <li>
-            <a href={site.github} target="_blank" rel="noopener noreferrer" className="text-white/60 transition-colors hover:text-white">
+            <a
+              href={site.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/60 transition-colors hover:text-white"
+            >
               GitHub ↗
             </a>
           </li>
           <li>
-            <a href={site.linkedin} target="_blank" rel="noopener noreferrer" className="text-white/60 transition-colors hover:text-white">
+            <a
+              href={site.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/60 transition-colors hover:text-white"
+            >
               LinkedIn ↗
             </a>
           </li>
           <li>
-            <a href={`mailto:${site.email}`} className="text-white/60 transition-colors hover:text-white">
+            <a
+              href={`mailto:${site.email}`}
+              className="text-white/60 transition-colors hover:text-white"
+            >
               Email ↗
             </a>
           </li>
         </ul>
       </div>
 
-      <p className="display mt-10 text-center text-[19vw] leading-[0.8] text-white/90">{site.name}</p>
+      <p className="display mt-10 text-center text-[19vw] leading-[0.8] text-white/90">
+        {site.name}
+      </p>
 
       <div className="flex flex-wrap items-center justify-between gap-2 py-6 text-[0.7rem] uppercase tracking-[0.14em] text-white/55">
         <span>© 2026 {site.name}</span>

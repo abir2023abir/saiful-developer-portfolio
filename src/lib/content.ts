@@ -10,7 +10,9 @@ const KEY = "site.json";
  */
 export async function readContent(): Promise<Content> {
   const parsed = await storage().readJson<Partial<Content>>(KEY);
-  if (!parsed) return seed;
+  // A copy, so an accidental in-place write cannot leak across requests on a
+  // warm instance.
+  if (!parsed) return structuredClone(seed);
 
   return {
     site: { ...seed.site, ...parsed.site },
@@ -25,7 +27,9 @@ export async function writeContent(next: Content): Promise<void> {
   await storage().writeJson(KEY, next);
 }
 
-export async function updateContent(patch: (current: Content) => Content): Promise<Content> {
+export async function updateContent(
+  patch: (current: Content) => Content,
+): Promise<Content> {
   const next = patch(await readContent());
   await writeContent(next);
   return next;

@@ -11,7 +11,11 @@ const tabs = [
   { href: "/admin/messages", label: "Messages" },
 ];
 
-export default async function ProtectedLayout({ children }: { children: React.ReactNode }) {
+export default async function ProtectedLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const admin = await currentAdmin();
   if (!admin) redirect("/admin/login");
 
@@ -20,7 +24,9 @@ export default async function ProtectedLayout({ children }: { children: React.Re
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-black/10 pb-6">
         <div>
           <p className="eyebrow text-black/55">Signed in as {admin}</p>
-          <h1 className="font-display text-2xl font-bold tracking-tight">Content admin</h1>
+          <h1 className="font-display text-2xl font-bold tracking-tight">
+            Content admin
+          </h1>
         </div>
         <div className="flex items-center gap-3">
           <Link

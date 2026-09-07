@@ -13,7 +13,8 @@ export default function NotFound() {
             Not <span className="text-black/45">here.</span>
           </h1>
           <p className="mx-auto mt-6 max-w-sm text-[0.95rem] leading-relaxed text-black/60">
-            That page does not exist — or it moved. The work is all still where it was.
+            That page does not exist — or it moved. The work is all still where
+            it was.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-3">
             <Link

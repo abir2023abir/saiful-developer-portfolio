@@ -13,8 +13,16 @@ export default function Cursor() {
   const [over, setOver] = useState(false);
   const [visible, setVisible] = useState(false);
 
-  const x = useSpring(useMotionValue(-100), { stiffness: 520, damping: 40, mass: 0.35 });
-  const y = useSpring(useMotionValue(-100), { stiffness: 520, damping: 40, mass: 0.35 });
+  const x = useSpring(useMotionValue(-100), {
+    stiffness: 520,
+    damping: 40,
+    mass: 0.35,
+  });
+  const y = useSpring(useMotionValue(-100), {
+    stiffness: 520,
+    damping: 40,
+    mass: 0.35,
+  });
 
   useEffect(() => {
     const fine =
@@ -55,7 +63,10 @@ export default function Cursor() {
         animate={{ width: over ? 72 : 10, height: over ? 72 : 10 }}
         transition={{ type: "spring", stiffness: 320, damping: 26 }}
       >
-        <motion.span animate={{ opacity: over ? 1 : 0 }} transition={{ duration: 0.15 }}>
+        <motion.span
+          animate={{ opacity: over ? 1 : 0 }}
+          transition={{ duration: 0.15 }}
+        >
           View
         </motion.span>
       </motion.div>

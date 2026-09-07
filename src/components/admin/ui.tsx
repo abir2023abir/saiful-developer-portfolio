@@ -29,7 +29,9 @@ export function Field({
   return (
     <label className="block">
       <span className="text-sm font-semibold">{label}</span>
-      {hint && <span className="mt-0.5 block text-xs text-black/55">{hint}</span>}
+      {hint && (
+        <span className="mt-0.5 block text-xs text-black/55">{hint}</span>
+      )}
       {rows ? (
         <textarea
           name={name}
@@ -53,7 +55,11 @@ export function Field({
   );
 }
 
-export function SubmitButton({ children = "Save changes" }: { children?: React.ReactNode }) {
+export function SubmitButton({
+  children = "Save changes",
+}: {
+  children?: React.ReactNode;
+}) {
   const { pending } = useFormStatus();
   return (
     <button

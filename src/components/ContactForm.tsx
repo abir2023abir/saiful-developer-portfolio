@@ -40,7 +40,8 @@ export default function ContactForm({ site }: { site: SiteSettings }) {
       <div
         className="relative h-40"
         style={{
-          background: "linear-gradient(120deg, #e8461c 0%, #c8340f 30%, #6366f1 65%, #0ea5e9 100%)",
+          background:
+            "linear-gradient(120deg, #e8461c 0%, #c8340f 30%, #6366f1 65%, #0ea5e9 100%)",
         }}
       >
         <div className="grid-lines absolute inset-0 opacity-30" aria-hidden />
@@ -51,11 +52,19 @@ export default function ContactForm({ site }: { site: SiteSettings }) {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4 p-6 sm:p-8">
-        <h3 className="text-center font-display text-xl font-bold tracking-tight">Reach out to me</h3>
+        <h3 className="text-center font-display text-xl font-bold tracking-tight">
+          Reach out to me
+        </h3>
 
         <label className="block">
           <span className="text-sm font-medium">Full Name*</span>
-          <input name="name" required maxLength={120} placeholder="Emily Johnson" className={field} />
+          <input
+            name="name"
+            required
+            maxLength={120}
+            placeholder="Emily Johnson"
+            className={field}
+          />
         </label>
 
         <label className="block">
@@ -101,7 +110,9 @@ export default function ContactForm({ site }: { site: SiteSettings }) {
 
         <p aria-live="polite" className="min-h-[1.25rem] text-center text-xs">
           {state === "sent" && (
-            <span className="text-emerald-700">Thank you — your message landed. I reply within a day.</span>
+            <span className="text-emerald-700">
+              Thank you — your message landed. I reply within a day.
+            </span>
           )}
           {state === "error" && <span className="text-brand-ink">{error}</span>}
         </p>

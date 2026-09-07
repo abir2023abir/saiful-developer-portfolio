@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AnimatePresence, animate, motion, useMotionValue, useTransform } from "framer-motion";
+import {
+  AnimatePresence,
+  animate,
+  motion,
+  useMotionValue,
+  useTransform,
+} from "framer-motion";
 
 /**
  * Single-stroke cursive "hello", drawn the way Apple draws it on first boot:
@@ -21,7 +27,9 @@ const HELLO =
 export default function Preloader({ onDone }: { onDone: () => void }) {
   const [open, setOpen] = useState(true);
   const count = useMotionValue(0);
-  const label = useTransform(count, (v) => String(Math.round(v)).padStart(3, "0"));
+  const label = useTransform(count, (v) =>
+    String(Math.round(v)).padStart(3, "0"),
+  );
   const progress = useTransform(count, (v) => `${v}%`);
   const [reduced, setReduced] = useState(false);
 
@@ -41,7 +49,7 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
         document.body.style.overflow = "";
         onDone();
       },
-      quick ? 700 : 3300
+      quick ? 700 : 3300,
     );
 
     return () => {
@@ -82,7 +90,11 @@ export default function Preloader({ onDone }: { onDone: () => void }) {
                 pathLength={1}
                 initial={{ strokeDashoffset: 1 }}
                 animate={{ strokeDashoffset: 0 }}
-                transition={{ duration: reduced ? 0.3 : 2.3, delay: reduced ? 0 : 0.25, ease: [0.33, 0.1, 0.2, 1] }}
+                transition={{
+                  duration: reduced ? 0.3 : 2.3,
+                  delay: reduced ? 0 : 0.25,
+                  ease: [0.33, 0.1, 0.2, 1],
+                }}
                 style={{ strokeDasharray: 1 }}
               />
             </svg>

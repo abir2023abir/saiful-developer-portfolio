@@ -22,7 +22,10 @@ export default async function MessagesPage() {
           <div className="flex flex-wrap items-baseline justify-between gap-3">
             <p className="font-semibold">
               {m.name}{" "}
-              <a href={`mailto:${m.email}`} className="ml-1 text-sm font-normal text-brand-ink hover:underline">
+              <a
+                href={`mailto:${m.email}`}
+                className="ml-1 text-sm font-normal text-brand-ink hover:underline"
+              >
                 {m.email}
               </a>
             </p>
@@ -31,7 +34,9 @@ export default async function MessagesPage() {
             </time>
           </div>
 
-          <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-black/70">{m.body}</p>
+          <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-black/70">
+            {m.body}
+          </p>
 
           <div className="mt-4 flex items-center gap-4">
             <form action={toggleMessage}>

@@ -23,8 +23,20 @@ export default function Nav({
   const overlay = variant === "overlay";
 
   const tone = overlay
-    ? { text: "text-white", dim: "text-white", faint: "text-white/50", rule: "border-white/20", bar: "bg-white" }
-    : { text: "text-ink", dim: "text-black/70", faint: "text-black/55", rule: "border-black/10", bar: "bg-ink" };
+    ? {
+        text: "text-white",
+        dim: "text-white",
+        faint: "text-white/50",
+        rule: "border-white/20",
+        bar: "bg-white",
+      }
+    : {
+        text: "text-ink",
+        dim: "text-black/70",
+        faint: "text-black/55",
+        rule: "border-black/10",
+        bar: "bg-ink",
+      };
 
   return (
     <motion.header
@@ -34,14 +46,18 @@ export default function Nav({
       transition={{ duration: 0.7, delay: overlay ? 0.1 : 0 }}
     >
       <div className={`flex items-center justify-between ${tone.text}`}>
-        <Link href="/" className="font-display text-lg font-bold tracking-tight">
+        <Link
+          href="/"
+          className="font-display text-lg font-bold tracking-tight"
+        >
           {name.split(" ")[0]}
           <sup className="ml-0.5 text-[0.6em] font-normal">®</sup>
         </Link>
 
         <nav className="hidden items-center gap-8 lg:flex">
           {links.map((l) => {
-            const active = l.href === "/" ? pathname === "/" : pathname.startsWith(l.href);
+            const active =
+              l.href === "/" ? pathname === "/" : pathname.startsWith(l.href);
             return (
               <Link
                 key={l.label}
@@ -49,7 +65,11 @@ export default function Nav({
                 className={`group relative text-sm transition-colors ${active ? tone.text : tone.dim} hover:${tone.text}`}
               >
                 {l.label}
-                {l.count && <sup className={`ml-1 text-[0.65em] ${tone.faint}`}>({l.count})</sup>}
+                {l.count && (
+                  <sup className={`ml-1 text-[0.65em] ${tone.faint}`}>
+                    ({l.count})
+                  </sup>
+                )}
                 <span
                   className={`absolute -bottom-1 left-0 h-px ${tone.bar} transition-all duration-300 ${
                     active ? "w-full" : "w-0 group-hover:w-full"
@@ -67,8 +87,12 @@ export default function Nav({
           onClick={() => setOpen((v) => !v)}
           className="flex h-9 w-9 flex-col items-end justify-center gap-[6px] lg:hidden"
         >
-          <span className={`block h-[2px] ${tone.bar} transition-all ${open ? "w-6 translate-y-[4px] rotate-45" : "w-7"}`} />
-          <span className={`block h-[2px] ${tone.bar} transition-all ${open ? "w-6 -translate-y-[4px] -rotate-45" : "w-5"}`} />
+          <span
+            className={`block h-[2px] ${tone.bar} transition-all ${open ? "w-6 translate-y-[4px] rotate-45" : "w-7"}`}
+          />
+          <span
+            className={`block h-[2px] ${tone.bar} transition-all ${open ? "w-6 -translate-y-[4px] -rotate-45" : "w-5"}`}
+          />
         </button>
 
         <div className="hidden lg:block" aria-hidden>

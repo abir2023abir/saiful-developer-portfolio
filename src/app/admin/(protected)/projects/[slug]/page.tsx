@@ -16,15 +16,23 @@ export default async function EditProjectPage({
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-        <h2 className="font-display text-xl font-bold tracking-tight">{project.title}</h2>
-        <Link href={`/work/${project.slug}`} className="text-xs uppercase tracking-[0.14em] text-black/55 hover:text-brand-ink">
+        <h2 className="font-display text-xl font-bold tracking-tight">
+          {project.title}
+        </h2>
+        <Link
+          href={`/work/${project.slug}`}
+          className="text-xs uppercase tracking-[0.14em] text-black/55 hover:text-brand-ink"
+        >
           View page ↗
         </Link>
       </div>
 
       <ProjectForm project={project} />
 
-      <form action={deleteProject} className="mt-12 border-t border-black/10 pt-6">
+      <form
+        action={deleteProject}
+        className="mt-12 border-t border-black/10 pt-6"
+      >
         <input type="hidden" name="slug" value={project.slug} />
         <button className="text-xs font-semibold uppercase tracking-[0.14em] text-brand-ink hover:underline">
           Delete this project

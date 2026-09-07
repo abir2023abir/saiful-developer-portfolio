@@ -32,9 +32,16 @@ export default function Hero({
   const portraitY = useTransform(scrollYProgress, [0, 1], [0, -40]);
 
   return (
-    <section ref={section} id="top" className="relative isolate min-h-[100svh] overflow-hidden bg-brand">
+    <section
+      ref={section}
+      id="top"
+      className="relative isolate min-h-[100svh] overflow-hidden bg-brand"
+    >
       {/* Swiss grid: hairlines plus a crosshair at every intersection. */}
-      <div className="grid-lines pointer-events-none absolute inset-0 opacity-70" aria-hidden />
+      <div
+        className="grid-lines pointer-events-none absolute inset-0 opacity-70"
+        aria-hidden
+      />
       <div className="pointer-events-none absolute inset-0" aria-hidden>
         {[25, 50, 75].map((top) =>
           [25, 50, 75].map((left) => (
@@ -44,10 +51,14 @@ export default function Hero({
               style={{ top: `${top}%`, left: `${left}%` }}
             >
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <path d="M7 0v14M0 7h14" stroke="currentColor" strokeWidth="1" />
+                <path
+                  d="M7 0v14M0 7h14"
+                  stroke="currentColor"
+                  strokeWidth="1"
+                />
               </svg>
             </span>
-          ))
+          )),
         )}
       </div>
 
@@ -111,7 +122,9 @@ export default function Hero({
         transition={{ duration: 0.9, delay: 0.62, ease: [0.22, 1, 0.36, 1] }}
       >
         Hire me on Upwork
-        <span className="transition-transform duration-300 group-hover:translate-x-1">↗</span>
+        <span className="transition-transform duration-300 group-hover:translate-x-1">
+          ↗
+        </span>
       </motion.a>
 
       {/* Name across the bottom, in front of the portrait. */}
@@ -143,31 +156,39 @@ export default function Hero({
           className="absolute right-6 top-[36%] z-30 hidden w-52 sm:right-10 lg:block"
         >
           <Magnetic strength={0.22}>
-          <Link
-            data-cursor="view"
-            href={`/work/${featured.slug}`}
-            className="block border border-white/70 bg-white p-1.5 shadow-[0_18px_40px_rgba(0,0,0,0.18)] transition-shadow hover:shadow-[0_26px_60px_rgba(0,0,0,0.28)]"
-          >
-            <span className="relative block h-28 w-full overflow-hidden">
-              {featured.image ? (
-                <Image src={featured.image} alt="" fill sizes="208px" className="object-cover" />
-              ) : (
-                <span
-                  className="block h-full w-full"
-                  style={{
-                    background: `linear-gradient(135deg, ${featured.tint[0]}, ${featured.tint[1]})`,
-                  }}
-                />
-              )}
-            </span>
-            <span className="flex items-center justify-between px-1.5 py-2 text-[0.65rem] font-medium uppercase tracking-wider">
-              <span className="flex items-center gap-1">
-                <span className="text-brand-ink">✳</span>
-                {featured.title}
+            <Link
+              data-cursor="view"
+              href={`/work/${featured.slug}`}
+              className="block border border-white/70 bg-white p-1.5 shadow-[0_18px_40px_rgba(0,0,0,0.18)] transition-shadow hover:shadow-[0_26px_60px_rgba(0,0,0,0.28)]"
+            >
+              <span className="relative block h-28 w-full overflow-hidden">
+                {featured.image ? (
+                  <Image
+                    src={featured.image}
+                    alt=""
+                    fill
+                    sizes="208px"
+                    className="object-cover"
+                  />
+                ) : (
+                  <span
+                    className="block h-full w-full"
+                    style={{
+                      background: `linear-gradient(135deg, ${featured.tint[0]}, ${featured.tint[1]})`,
+                    }}
+                  />
+                )}
               </span>
-              <span className="text-black/55">/{featured.category.split(" ")[0]}</span>
-            </span>
-          </Link>
+              <span className="flex items-center justify-between px-1.5 py-2 text-[0.65rem] font-medium uppercase tracking-wider">
+                <span className="flex items-center gap-1">
+                  <span className="text-brand-ink">✳</span>
+                  {featured.title}
+                </span>
+                <span className="text-black/55">
+                  /{featured.category.split(" ")[0]}
+                </span>
+              </span>
+            </Link>
           </Magnetic>
         </motion.div>
       )}
@@ -180,29 +201,33 @@ export default function Hero({
         className="absolute bottom-28 right-6 z-30 hidden w-60 sm:right-10 lg:block"
       >
         <Magnetic strength={0.22}>
-        <Link
-          href="/contact"
-          className="flex items-center gap-3 bg-ink p-2 text-white transition-shadow hover:shadow-[0_20px_44px_rgba(0,0,0,0.3)]"
-        >
-          {/* Punched in on the face — the whole cut-out at 48px would read as a blob. */}
-          <span
-            aria-hidden
-            className="h-12 w-12 shrink-0 bg-brand"
-            style={{
-              backgroundImage: "url(/images/hero-portrait.png)",
-              backgroundSize: "150%",
-              backgroundPosition: "22% 6%",
-            }}
-          />
-          <span className="flex-1 leading-tight">
-            <span className="block text-[0.6rem] uppercase tracking-[0.16em] text-white/55">
-              Let&apos;s talk
+          <Link
+            href="/contact"
+            className="flex items-center gap-3 bg-ink p-2 text-white transition-shadow hover:shadow-[0_20px_44px_rgba(0,0,0,0.3)]"
+          >
+            {/* Punched in on the face — the whole cut-out at 48px would read as a blob. */}
+            <span
+              aria-hidden
+              className="h-12 w-12 shrink-0 bg-brand"
+              style={{
+                backgroundImage: "url(/images/hero-portrait.png)",
+                backgroundSize: "150%",
+                backgroundPosition: "22% 6%",
+              }}
+            />
+            <span className="flex-1 leading-tight">
+              <span className="block text-[0.6rem] uppercase tracking-[0.16em] text-white/55">
+                Let&apos;s talk
+              </span>
+              <span className="block text-sm font-semibold">{site.name}</span>
+              <span className="block text-[0.65rem] text-white/60">
+                {site.role}
+              </span>
             </span>
-            <span className="block text-sm font-semibold">{site.name}</span>
-            <span className="block text-[0.65rem] text-white/60">{site.role}</span>
-          </span>
-          <span className="grid h-7 w-7 place-items-center border border-white/25 text-xs">↗</span>
-        </Link>
+            <span className="grid h-7 w-7 place-items-center border border-white/25 text-xs">
+              ↗
+            </span>
+          </Link>
         </Magnetic>
       </motion.div>
     </section>

@@ -1,7 +1,13 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, useMotionTemplate, useMotionValue, useSpring } from "framer-motion";
+import {
+  AnimatePresence,
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useSpring,
+} from "framer-motion";
 import { useFormStatus } from "react-dom";
 import { login } from "../actions";
 
@@ -88,9 +94,12 @@ export default function LoginForm() {
 
         <div className="relative">
           <p className="eyebrow text-white/45">Restricted</p>
-          <h1 className="display mt-3 text-4xl text-white sm:text-5xl">Sign in</h1>
+          <h1 className="display mt-3 text-4xl text-white sm:text-5xl">
+            Sign in
+          </h1>
           <p className="mt-3 text-sm text-white/45">
-            Content admin for the portfolio. Everything on the public site is edited here.
+            Content admin for the portfolio. Everything on the public site is
+            edited here.
           </p>
 
           <form action={formAction} className="mt-10">

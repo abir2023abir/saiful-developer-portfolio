@@ -43,13 +43,18 @@ export default async function CaseStudy({ params }: Params) {
     <PageShell>
       <header
         className="relative overflow-hidden px-6 pb-16 pt-20 sm:px-10 sm:pb-20 sm:pt-28"
-        style={{ background: `linear-gradient(140deg, ${project.tint[0]}, ${project.tint[1]})` }}
+        style={{
+          background: `linear-gradient(140deg, ${project.tint[0]}, ${project.tint[1]})`,
+        }}
       >
         {/* The tint is chosen in the admin panel and can be light, so a scrim
             guarantees the white type keeps its contrast whatever it is set to. */}
         <div
           className="absolute inset-0"
-          style={{ background: "linear-gradient(to top, rgba(0,0,0,0.62), rgba(0,0,0,0.22))" }}
+          style={{
+            background:
+              "linear-gradient(to top, rgba(0,0,0,0.62), rgba(0,0,0,0.22))",
+          }}
           aria-hidden
         />
         <div className="grid-lines absolute inset-0 opacity-30" aria-hidden />
@@ -96,16 +101,21 @@ export default async function CaseStudy({ params }: Params) {
               body.map(([heading, text]) =>
                 text ? (
                   <Reveal key={heading}>
-                    <h2 className="display text-[8vw] leading-[0.9] sm:text-[2.5rem]">{heading}</h2>
-                    <p className="mt-4 max-w-2xl text-[0.95rem] leading-relaxed text-black/65">{text}</p>
+                    <h2 className="display text-[8vw] leading-[0.9] sm:text-[2.5rem]">
+                      {heading}
+                    </h2>
+                    <p className="mt-4 max-w-2xl text-[0.95rem] leading-relaxed text-black/65">
+                      {text}
+                    </p>
                   </Reveal>
-                ) : null
+                ) : null,
               )
             ) : (
               <Reveal>
                 <p className="max-w-2xl text-[0.95rem] leading-relaxed text-black/55">
-                  A full write-up for this project is still to come. Add the problem, approach and
-                  result in the admin panel and they will appear here.
+                  A full write-up for this project is still to come. Add the
+                  problem, approach and result in the admin panel and they will
+                  appear here.
                 </p>
               </Reveal>
             )}
@@ -117,7 +127,9 @@ export default async function CaseStudy({ params }: Params) {
               <dl className="mt-6 space-y-5 text-sm">
                 <div>
                   <dt className="eyebrow text-black/55">Role</dt>
-                  <dd className="mt-1">Full-stack — design, API, database, interface</dd>
+                  <dd className="mt-1">
+                    Full-stack — design, API, database, interface
+                  </dd>
                 </div>
                 <div>
                   <dt className="eyebrow text-black/55">Year</dt>

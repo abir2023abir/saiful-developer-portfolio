@@ -33,16 +33,20 @@ function readOnly(error: unknown): Error {
     return new Error(
       "This host has no writable filesystem, so the change was not saved. " +
         "Create a Vercel Blob store, then set STORAGE=blob and BLOB_READ_WRITE_TOKEN " +
-        "in the project's environment variables and redeploy."
+        "in the project's environment variables and redeploy.",
     );
   }
-  return error instanceof Error ? error : new Error("Could not write to storage.");
+  return error instanceof Error
+    ? error
+    : new Error("Could not write to storage.");
 }
 
 const fsStorage: Storage = {
   async readJson<T>(key: string): Promise<T | null> {
     try {
-      return JSON.parse(await fs.readFile(path.join(process.cwd(), "content", key), "utf8")) as T;
+      return JSON.parse(
+        await fs.readFile(path.join(process.cwd(), "content", key), "utf8"),
+      ) as T;
     } catch {
       return null;
     }
@@ -79,16 +83,25 @@ function blobStorage(token: string): Storage {
   const auth = { Authorization: `Bearer ${token}` };
 
   async function urlFor(key: string): Promise<string | null> {
-    const res = await fetch(`${base}?prefix=${encodeURIComponent(key)}&limit=1`, {
-      headers: auth,
-      cache: "no-store",
-    });
+    const res = await fetch(
+      `${base}?prefix=${encodeURIComponent(key)}&limit=1`,
+      {
+        headers: auth,
+        cache: "no-store",
+      },
+    );
     if (!res.ok) return null;
-    const { blobs } = (await res.json()) as { blobs: Array<{ pathname: string; url: string }> };
+    const { blobs } = (await res.json()) as {
+      blobs: Array<{ pathname: string; url: string }>;
+    };
     return blobs.find((b) => b.pathname === key)?.url ?? null;
   }
 
-  async function put(key: string, body: BodyInit, contentType: string): Promise<string> {
+  async function put(
+    key: string,
+    body: BodyInit,
+    contentType: string,
+  ): Promise<string> {
     const res = await fetch(`${base}/${encodeURI(key)}`, {
       method: "PUT",
       headers: {
@@ -102,7 +115,8 @@ function blobStorage(token: string): Storage {
       },
       body,
     });
-    if (!res.ok) throw new Error(`Blob upload failed: ${res.status} ${await res.text()}`);
+    if (!res.ok)
+      throw new Error(`Blob upload failed: ${res.status} ${await res.text()}`);
     const { url } = (await res.json()) as { url: string };
     return url;
   }
@@ -126,18 +140,49 @@ function blobStorage(token: string): Storage {
   };
 }
 
-let cached: Storage | null = null;
+/**
+ * Reads succeed as "nothing stored" and only writes report the problem. A store
+ * that is configured wrong must not take the public site down with it — every
+ * page reads content on render, so throwing here would 500 the whole site over
+ * a setting that only affects the admin panel's ability to save.
+ */
+function misconfigured(reason: string): Storage {
+  return {
+    async readJson() {
+      return null;
+    },
+    async writeJson() {
+      throw new Error(reason);
+    },
+    async putFile() {
+      throw new Error(reason);
+    },
+  };
+}
+
+let cached: { key: string; storage: Storage } | null = null;
 
 export function storage(): Storage {
-  if (cached) return cached;
-
   const mode = env("STORAGE") ?? "fs";
-  if (mode === "blob") {
-    const token = env("BLOB_READ_WRITE_TOKEN");
-    if (!token) throw new Error("STORAGE=blob needs BLOB_READ_WRITE_TOKEN.");
-    cached = blobStorage(token);
+  const token = env("BLOB_READ_WRITE_TOKEN") ?? "";
+
+  // Keyed on the resolved inputs so a rotated token is picked up rather than
+  // frozen for the life of the process.
+  const key = `${mode}:${token.slice(0, 12)}`;
+  if (cached && cached.key === key) return cached.storage;
+
+  let resolved: Storage;
+  if (mode !== "blob") {
+    resolved = fsStorage;
+  } else if (token) {
+    resolved = blobStorage(token);
   } else {
-    cached = fsStorage;
+    resolved = misconfigured(
+      "STORAGE=blob is set but BLOB_READ_WRITE_TOKEN is missing, so nothing can be " +
+        "saved. Add the token in the project's environment variables and redeploy.",
+    );
   }
-  return cached;
+
+  cached = { key, storage: resolved };
+  return resolved;
 }

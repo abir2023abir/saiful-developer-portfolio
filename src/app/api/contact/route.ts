@@ -2,30 +2,25 @@ import { NextResponse } from "next/server";
 import { addMessage } from "@/lib/messages";
 import { readContent } from "@/lib/content";
 import { env } from "@/lib/env";
+import { clientIp, rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
-/** In-process, per-IP. Enough for a single-instance portfolio; not a shared limiter. */
-const hits = new Map<string, number[]>();
-const WINDOW = 60_000;
-const LIMIT = 5;
-
-function rateLimited(ip: string): boolean {
-  const now = Date.now();
-  const recent = (hits.get(ip) ?? []).filter((t) => now - t < WINDOW);
-  recent.push(now);
-  hits.set(ip, recent);
-  return recent.length > LIMIT;
-}
-
-async function forwardByEmail(name: string, email: string, body: string): Promise<boolean> {
+async function forwardByEmail(
+  name: string,
+  email: string,
+  body: string,
+): Promise<boolean> {
   const key = env("RESEND_API_KEY");
   const to = env("CONTACT_TO");
   if (!key || !to) return false;
 
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
-    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+    headers: {
+      Authorization: `Bearer ${key}`,
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({
       from: env("CONTACT_FROM") ?? "Portfolio <onboarding@resend.dev>",
       to: [to],
@@ -38,12 +33,9 @@ async function forwardByEmail(name: string, email: string, body: string): Promis
 }
 
 export async function POST(request: Request) {
-  const ip =
-    request.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
-    request.headers.get("x-real-ip") ??
-    "local";
+  const ip = clientIp(request);
 
-  if (rateLimited(ip)) {
+  if (rateLimit(`contact:${ip}`, 5, 60_000)) {
     return NextResponse.json(
       { error: "Too many messages. Try again in a minute." },
       { status: 429 },
@@ -69,7 +61,10 @@ export async function POST(request: Request) {
   const body = String(data.message ?? "").trim();
 
   if (name.length < 2 || name.length > 120) {
-    return NextResponse.json({ error: "Please enter your name." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Please enter your name." },
+      { status: 400 },
+    );
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) || email.length > 200) {
     return NextResponse.json(

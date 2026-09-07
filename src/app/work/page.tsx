@@ -6,7 +6,8 @@ import { readContent } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Work",
-  description: "Selected full-stack projects: ERP, SaaS dashboards, storefronts and realtime apps.",
+  description:
+    "Selected full-stack projects: ERP, SaaS dashboards, storefronts and realtime apps.",
 };
 
 export default async function WorkPage() {

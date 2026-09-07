@@ -17,7 +17,7 @@ export async function readMessages(): Promise<Message[]> {
 }
 
 export async function addMessage(
-  input: Omit<Message, "id" | "receivedAt" | "read">
+  input: Omit<Message, "id" | "receivedAt" | "read">,
 ): Promise<Message> {
   const all = await readMessages();
   const message: Message = {
@@ -33,10 +33,16 @@ export async function addMessage(
 
 export async function setRead(id: string, read: boolean): Promise<void> {
   const all = await readMessages();
-  await storage().writeJson(KEY, all.map((m) => (m.id === id ? { ...m, read } : m)));
+  await storage().writeJson(
+    KEY,
+    all.map((m) => (m.id === id ? { ...m, read } : m)),
+  );
 }
 
 export async function deleteMessage(id: string): Promise<void> {
   const all = await readMessages();
-  await storage().writeJson(KEY, all.filter((m) => m.id !== id));
+  await storage().writeJson(
+    KEY,
+    all.filter((m) => m.id !== id),
+  );
 }

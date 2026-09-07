@@ -19,7 +19,7 @@ export default function LoginStage({ name }: { name: string }) {
           hour: "2-digit",
           minute: "2-digit",
           second: "2-digit",
-        })
+        }),
       );
     tick();
     const id = window.setInterval(tick, 1000);
@@ -27,9 +27,24 @@ export default function LoginStage({ name }: { name: string }) {
   }, []);
 
   const blobs = [
-    { color: "#d13a13", size: 620, from: "-10% 10%", to: ["-10% 10%", "25% 35%", "-5% 55%", "-10% 10%"] },
-    { color: "#6366f1", size: 520, from: "70% 0%", to: ["70% 0%", "45% 40%", "80% 25%", "70% 0%"] },
-    { color: "#0ea5e9", size: 460, from: "30% 80%", to: ["30% 80%", "65% 70%", "20% 60%", "30% 80%"] },
+    {
+      color: "#d13a13",
+      size: 620,
+      from: "-10% 10%",
+      to: ["-10% 10%", "25% 35%", "-5% 55%", "-10% 10%"],
+    },
+    {
+      color: "#6366f1",
+      size: 520,
+      from: "70% 0%",
+      to: ["70% 0%", "45% 40%", "80% 25%", "70% 0%"],
+    },
+    {
+      color: "#0ea5e9",
+      size: 460,
+      from: "30% 80%",
+      to: ["30% 80%", "65% 70%", "20% 60%", "30% 80%"],
+    },
   ];
 
   return (
@@ -56,11 +71,18 @@ export default function LoginStage({ name }: { name: string }) {
                   top: b.to.map((p) => p.split(" ")[1]),
                 }
           }
-          transition={{ duration: 26 + i * 7, repeat: Infinity, ease: "easeInOut" }}
+          transition={{
+            duration: 26 + i * 7,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
         />
       ))}
 
-      <div className="grid-lines pointer-events-none absolute inset-0 opacity-50" aria-hidden />
+      <div
+        className="grid-lines pointer-events-none absolute inset-0 opacity-50"
+        aria-hidden
+      />
       <div className="pointer-events-none absolute inset-0" aria-hidden>
         {[25, 50, 75].map((top) =>
           [25, 50, 75].map((left) => (
@@ -70,10 +92,14 @@ export default function LoginStage({ name }: { name: string }) {
               style={{ top: `${top}%`, left: `${left}%` }}
             >
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <path d="M7 0v14M0 7h14" stroke="currentColor" strokeWidth="1" />
+                <path
+                  d="M7 0v14M0 7h14"
+                  stroke="currentColor"
+                  strokeWidth="1"
+                />
               </svg>
             </span>
-          ))
+          )),
         )}
       </div>
 
@@ -83,7 +109,10 @@ export default function LoginStage({ name }: { name: string }) {
             {name.split(" ")[0]}
             <sup className="ml-0.5 text-[0.6em] font-normal">®</sup>
           </span>
-          <span className="eyebrow tabular-nums text-white/55" suppressHydrationWarning>
+          <span
+            className="eyebrow tabular-nums text-white/55"
+            suppressHydrationWarning
+          >
             {now ?? "--:--:--"}
           </span>
         </div>
@@ -102,7 +131,11 @@ export default function LoginStage({ name }: { name: string }) {
         </div>
 
         <div className="mt-8 overflow-hidden border-t border-white/15 pt-4 [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
-          <div className={still ? "flex gap-10" : "animate-marquee flex w-max gap-10"}>
+          <div
+            className={
+              still ? "flex gap-10" : "animate-marquee flex w-max gap-10"
+            }
+          >
             {Array.from({ length: 12 }).map((_, i) => (
               <span
                 key={i}

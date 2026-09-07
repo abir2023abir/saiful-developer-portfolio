@@ -10,9 +10,12 @@ export default async function ProjectsPage() {
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 className="font-display text-xl font-bold tracking-tight">Projects</h2>
+          <h2 className="font-display text-xl font-bold tracking-tight">
+            Projects
+          </h2>
           <p className="mt-1 text-sm text-black/55">
-            The order here is the order on the site. The first four appear on the home page.
+            The order here is the order on the site. The first four appear on
+            the home page.
           </p>
         </div>
         <Link
@@ -28,11 +31,19 @@ export default async function ProjectsPage() {
           <li key={p.slug} className="flex items-center gap-4 p-4">
             <div className="relative h-14 w-24 shrink-0 overflow-hidden border border-black/10 bg-smoke">
               {p.image ? (
-                <Image src={p.image} alt="" fill sizes="96px" className="object-cover object-top" />
+                <Image
+                  src={p.image}
+                  alt=""
+                  fill
+                  sizes="96px"
+                  className="object-cover object-top"
+                />
               ) : (
                 <span
                   className="block h-full w-full"
-                  style={{ background: `linear-gradient(140deg, ${p.tint[0]}, ${p.tint[1]})` }}
+                  style={{
+                    background: `linear-gradient(140deg, ${p.tint[0]}, ${p.tint[1]})`,
+                  }}
                 />
               )}
             </div>
@@ -40,7 +51,11 @@ export default async function ProjectsPage() {
             <div className="min-w-0 flex-1">
               <p className="truncate font-semibold">
                 {p.title}
-                {p.featured && <span className="ml-2 text-xs font-normal text-brand-ink">featured</span>}
+                {p.featured && (
+                  <span className="ml-2 text-xs font-normal text-brand-ink">
+                    featured
+                  </span>
+                )}
               </p>
               <p className="truncate text-xs text-black/55">
                 /work/{p.slug} · {p.category || "no category"} · {p.year}

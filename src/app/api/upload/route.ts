@@ -21,10 +21,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "No file received." }, { status: 400 });
   }
   if (!ACCEPTED.has(file.type)) {
-    return NextResponse.json({ error: "PNG, JPEG or WebP only." }, { status: 415 });
+    return NextResponse.json(
+      { error: "PNG, JPEG or WebP only." },
+      { status: 415 },
+    );
   }
   if (file.size > MAX_BYTES) {
-    return NextResponse.json({ error: "That file is over 12 MB." }, { status: 413 });
+    return NextResponse.json(
+      { error: "That file is over 12 MB." },
+      { status: 413 },
+    );
   }
 
   const source = Buffer.from(await file.arrayBuffer());
@@ -40,13 +46,25 @@ export async function POST(request: Request) {
       .jpeg({ quality: 82, mozjpeg: true })
       .toBuffer();
   } catch {
-    return NextResponse.json({ error: "That file is not a readable image." }, { status: 422 });
+    return NextResponse.json(
+      { error: "That file is not a readable image." },
+      { status: 422 },
+    );
   }
 
   // The name is generated rather than taken from the upload, so a crafted
   // filename cannot traverse out of the uploads directory.
   const name = `${randomUUID()}.jpg`;
-  const path = await storage().putFile(name, optimised, "image/jpeg");
 
-  return NextResponse.json({ path, bytes: optimised.length });
+  try {
+    const path = await storage().putFile(name, optimised, "image/jpeg");
+    return NextResponse.json({ path, bytes: optimised.length });
+  } catch (e) {
+    // Storage explains itself — a host with no writable disk names the remedy.
+    // Let that reach the form instead of an HTML error page the client cannot
+    // parse as JSON.
+    const error = e instanceof Error ? e.message : "Could not save the image.";
+    console.error("upload failed:", e);
+    return NextResponse.json({ error }, { status: 503 });
+  }
 }

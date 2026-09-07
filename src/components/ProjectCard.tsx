@@ -2,14 +2,26 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useMotionTemplate, useMotionValue, useSpring, useTransform } from "framer-motion";
+import {
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import type { Project } from "@/lib/types";
 
 /**
  * The card tilts toward the pointer and lifts the screenshot behind a moving
  * sheen. Everything is spring-damped so a fast mouse cannot make it snap.
  */
-export default function ProjectCard({ project, index }: { project: Project; index: number }) {
+export default function ProjectCard({
+  project,
+  index,
+}: {
+  project: Project;
+  index: number;
+}) {
   const px = useMotionValue(0.5);
   const py = useMotionValue(0.5);
 
@@ -32,7 +44,11 @@ export default function ProjectCard({ project, index }: { project: Project; inde
       initial={{ opacity: 0, y: 44 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-90px" }}
-      transition={{ duration: 0.85, delay: (index % 2) * 0.08, ease: [0.22, 1, 0.36, 1] }}
+      transition={{
+        duration: 0.85,
+        delay: (index % 2) * 0.08,
+        ease: [0.22, 1, 0.36, 1],
+      }}
       className="group h-full [perspective:1200px]"
     >
       <motion.div
@@ -88,14 +104,20 @@ export default function ProjectCard({ project, index }: { project: Project; inde
           </div>
 
           <div className="flex items-baseline justify-between gap-4 border-t border-black/10 px-5 py-4">
-            <h3 className="font-display text-xl font-bold tracking-tight">{project.title}</h3>
-            <span className="eyebrow shrink-0 text-black/55">{project.year}</span>
+            <h3 className="font-display text-xl font-bold tracking-tight">
+              {project.title}
+            </h3>
+            <span className="eyebrow shrink-0 text-black/55">
+              {project.year}
+            </span>
           </div>
         </Link>
       </motion.div>
 
       <p className="eyebrow mt-4 text-brand-ink">{project.category}</p>
-      <p className="mt-2 max-w-lg text-sm leading-relaxed text-black/60">{project.summary}</p>
+      <p className="mt-2 max-w-lg text-sm leading-relaxed text-black/60">
+        {project.summary}
+      </p>
 
       <ul className="mt-4 flex flex-wrap gap-2">
         {project.stack.map((s) => (

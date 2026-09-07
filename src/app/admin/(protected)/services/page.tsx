@@ -8,7 +8,9 @@ export default async function ServicesAdminPage() {
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-        <h2 className="font-display text-xl font-bold tracking-tight">Services</h2>
+        <h2 className="font-display text-xl font-bold tracking-tight">
+          Services
+        </h2>
         <form action={addService}>
           <button className="bg-ink px-5 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-brand">
             Add a service

@@ -7,7 +7,11 @@ export function navLinks(content: Content): NavLink[] {
     { label: "Home", href: "/" },
     { label: "About", href: "/about" },
     { label: "Work", href: "/work", count: pad(content.projects.length) },
-    { label: "Services", href: "/services", count: pad(content.services.length) },
+    {
+      label: "Services",
+      href: "/services",
+      count: pad(content.services.length),
+    },
     { label: "Contact", href: "/contact" },
   ];
 }

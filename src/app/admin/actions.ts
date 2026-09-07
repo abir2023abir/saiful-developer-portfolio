@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import {
   createSession,
@@ -11,6 +12,7 @@ import {
 } from "@/lib/auth";
 import { readContent, updateContent } from "@/lib/content";
 import { deleteMessage as removeMessage, setRead } from "@/lib/messages";
+import { rateLimit } from "@/lib/rate-limit";
 import type { Project } from "@/lib/types";
 
 export type ActionState = { error?: string; ok?: string };
@@ -25,8 +27,22 @@ function refresh() {
 }
 
 /**
- * Storage can refuse a write — a read-only serverless filesystem is the common
- * case — and that has to reach the form as a message, not a 500.
+ * For the actions invoked straight from a <form action={...}> with no state.
+ * They cannot show a message, but they must not take the whole admin page down
+ * with Next's opaque "Application error" when a write fails.
+ */
+async function quietly(work: () => Promise<unknown>): Promise<void> {
+  try {
+    await work();
+    refresh();
+  } catch (e) {
+    console.error("admin action failed:", e);
+  }
+}
+
+/**
+ * Storage can refuse a write, and that has to reach the form as a message
+ * rather than a 500.
  */
 async function saved(work: () => Promise<unknown>): Promise<ActionState> {
   try {
@@ -55,13 +71,23 @@ export async function login(
   if (!username || !password)
     return { error: "Enter your username and password." };
 
-  // Without the env vars every attempt fails as a plain mismatch, which sends
-  // you hunting for a typo that is not there. Name the real problem instead.
+  // scryptSync blocks the event loop for tens of milliseconds, so an unlimited
+  // login endpoint is both a password oracle and a way to stall the public site.
+  const ip = (await headers()).get("x-real-ip") ?? "unknown";
+  if (
+    rateLimit(`login:${ip}`, 8, 15 * 60_000) ||
+    rateLimit("login:global", 40, 15 * 60_000)
+  ) {
+    return { error: "Too many attempts. Try again in a few minutes." };
+  }
+
+  // The specific cause goes to the server log; an anonymous visitor gets a
+  // generic message rather than a list of the variables this deploy is missing.
   if (!isConfigured()) {
-    return {
-      error:
-        "This deployment has no admin credentials set. Add ADMIN_USER, ADMIN_PASSWORD_HASH and AUTH_SECRET in the host's environment variables, then redeploy.",
-    };
+    console.error(
+      "Admin sign-in attempted but ADMIN_USER / ADMIN_PASSWORD_HASH / AUTH_SECRET are not all set.",
+    );
+    return { error: "Sign in is unavailable right now." };
   }
 
   try {
@@ -70,7 +96,8 @@ export async function login(
     }
     await createSession(username);
   } catch (e) {
-    return { error: e instanceof Error ? e.message : "Sign in failed." };
+    console.error("sign-in failed:", e);
+    return { error: "Sign in is unavailable right now." };
   }
 
   redirect("/admin");
@@ -155,28 +182,30 @@ export async function saveServices(
 
 export async function addService(): Promise<void> {
   await requireAdmin();
-  await updateContent((c) => ({
-    ...c,
-    services: [
-      ...c.services,
-      {
-        n: String(c.services.length + 1).padStart(2, "0"),
-        title: "New service",
-        body: "",
-      },
-    ],
-  }));
-  refresh();
+  await quietly(() =>
+    updateContent((c) => ({
+      ...c,
+      services: [
+        ...c.services,
+        {
+          n: String(c.services.length + 1).padStart(2, "0"),
+          title: "New service",
+          body: "",
+        },
+      ],
+    })),
+  );
 }
 
 export async function deleteService(formData: FormData): Promise<void> {
   await requireAdmin();
   const index = Number(formData.get("index"));
-  await updateContent((c) => ({
-    ...c,
-    services: c.services.filter((_, i) => i !== index),
-  }));
-  refresh();
+  await quietly(() =>
+    updateContent((c) => ({
+      ...c,
+      services: c.services.filter((_, i) => i !== index),
+    })),
+  );
 }
 
 function slugify(value: string): string {
@@ -249,11 +278,12 @@ export async function saveProject(
 export async function deleteProject(formData: FormData): Promise<void> {
   await requireAdmin();
   const slug = String(formData.get("slug") ?? "");
-  await updateContent((c) => ({
-    ...c,
-    projects: c.projects.filter((p) => p.slug !== slug),
-  }));
-  refresh();
+  await quietly(() =>
+    updateContent((c) => ({
+      ...c,
+      projects: c.projects.filter((p) => p.slug !== slug),
+    })),
+  );
   redirect("/admin/projects");
 }
 
@@ -262,29 +292,28 @@ export async function moveProject(formData: FormData): Promise<void> {
   const slug = String(formData.get("slug") ?? "");
   const delta = Number(formData.get("delta"));
 
-  await updateContent((c) => {
-    const projects = [...c.projects];
-    const from = projects.findIndex((p) => p.slug === slug);
-    const to = from + delta;
-    if (from === -1 || to < 0 || to >= projects.length) return c;
-    [projects[from], projects[to]] = [projects[to], projects[from]];
-    return { ...c, projects };
-  });
-
-  refresh();
+  await quietly(() =>
+    updateContent((c) => {
+      const projects = [...c.projects];
+      const from = projects.findIndex((p) => p.slug === slug);
+      const to = from + delta;
+      if (from === -1 || to < 0 || to >= projects.length) return c;
+      [projects[from], projects[to]] = [projects[to], projects[from]];
+      return { ...c, projects };
+    }),
+  );
 }
 
 export async function toggleMessage(formData: FormData): Promise<void> {
   await requireAdmin();
-  await setRead(
-    String(formData.get("id") ?? ""),
-    formData.get("read") === "true",
+  await quietly(() =>
+    setRead(String(formData.get("id") ?? ""), formData.get("read") === "true"),
   );
   revalidatePath("/admin/messages");
 }
 
 export async function deleteMessage(formData: FormData): Promise<void> {
   await requireAdmin();
-  await removeMessage(String(formData.get("id") ?? ""));
+  await quietly(() => removeMessage(String(formData.get("id") ?? "")));
   revalidatePath("/admin/messages");
 }

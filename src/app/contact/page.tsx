@@ -7,7 +7,8 @@ import { readContent } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "Tell me what you are building. I reply with a scope, a timeline and the risky parts.",
+  description:
+    "Tell me what you are building. I reply with a scope, a timeline and the risky parts.",
 };
 
 export default async function ContactPage() {
@@ -34,9 +35,9 @@ export default async function ContactPage() {
             </Reveal>
             <Reveal delay={0.12}>
               <p className="mt-8 max-w-md text-[0.95rem] leading-relaxed text-black/65">
-                Tell me what you are building and what has to be true for it to work. I will come
-                back with a scope, a timeline and the parts I think are risky — before either of us
-                commits.
+                Tell me what you are building and what has to be true for it to
+                work. I will come back with a scope, a timeline and the parts I
+                think are risky — before either of us commits.
               </p>
             </Reveal>
             <Reveal delay={0.18}>
