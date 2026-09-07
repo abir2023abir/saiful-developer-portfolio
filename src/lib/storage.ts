@@ -21,15 +21,19 @@ export type Storage = {
 };
 
 /**
- * A serverless host's filesystem is read-only, so a save there fails with EROFS
- * or EACCES. Say what to do about it instead of surfacing the raw errno.
+ * A serverless host gives no writable disk, and says so in several ways: EROFS
+ * when the mount is read-only, and ENOENT when the directory was never bundled
+ * in the first place. Say what to do about it rather than surface a raw errno.
  */
+const NO_WRITABLE_DISK = new Set(["EROFS", "EACCES", "EPERM", "ENOENT"]);
+
 function readOnly(error: unknown): Error {
   const code = (error as NodeJS.ErrnoException)?.code;
-  if (code === "EROFS" || code === "EACCES" || code === "EPERM") {
+  if (NO_WRITABLE_DISK.has(String(code))) {
     return new Error(
-      "This host's filesystem is read-only, so the change was not saved. " +
-        "Set STORAGE=blob and BLOB_READ_WRITE_TOKEN in the project's environment variables."
+      "This host has no writable filesystem, so the change was not saved. " +
+        "Create a Vercel Blob store, then set STORAGE=blob and BLOB_READ_WRITE_TOKEN " +
+        "in the project's environment variables and redeploy."
     );
   }
   return error instanceof Error ? error : new Error("Could not write to storage.");
