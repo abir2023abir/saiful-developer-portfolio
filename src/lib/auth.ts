@@ -1,11 +1,12 @@
 import { createHmac, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
+import { env } from "./env";
 
 const COOKIE = "sip_admin";
 const MAX_AGE = 60 * 60 * 8;
 
 function secret(): string {
-  const s = process.env.AUTH_SECRET;
+  const s = env("AUTH_SECRET");
   if (!s || s.length < 24) {
     throw new Error(
       "AUTH_SECRET is missing or too short. Copy .env.example to .env.local and fill it in."
@@ -31,12 +32,12 @@ function passwordMatches(password: string, stored: string): boolean {
 
 /** True when the admin credentials are present in the environment at all. */
 export function isConfigured(): boolean {
-  return Boolean(process.env.ADMIN_USER && process.env.ADMIN_PASSWORD_HASH && process.env.AUTH_SECRET);
+  return Boolean(env("ADMIN_USER") && env("ADMIN_PASSWORD_HASH") && env("AUTH_SECRET"));
 }
 
 export function verifyCredentials(username: string, password: string): boolean {
-  const user = process.env.ADMIN_USER;
-  const hash = process.env.ADMIN_PASSWORD_HASH;
+  const user = env("ADMIN_USER");
+  const hash = env("ADMIN_PASSWORD_HASH");
   if (!user || !hash) return false;
 
   const userOk =

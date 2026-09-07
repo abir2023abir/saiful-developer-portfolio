@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { addMessage } from "@/lib/messages";
+import { env } from "@/lib/env";
 
 export const runtime = "nodejs";
 
@@ -57,15 +58,15 @@ export async function POST(request: Request) {
   await addMessage({ name, email, body });
 
   // Optional: also forward by email when a Resend key is configured.
-  const key = process.env.RESEND_API_KEY;
-  const to = process.env.CONTACT_TO;
+  const key = env("RESEND_API_KEY");
+  const to = env("CONTACT_TO");
   if (key && to) {
     try {
       await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
         body: JSON.stringify({
-          from: process.env.CONTACT_FROM ?? "Portfolio <onboarding@resend.dev>",
+          from: env("CONTACT_FROM") ?? "Portfolio <onboarding@resend.dev>",
           to: [to],
           reply_to: email,
           subject: `Project enquiry from ${name}`,

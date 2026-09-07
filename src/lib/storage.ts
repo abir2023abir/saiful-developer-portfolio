@@ -1,5 +1,6 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { env } from "./env";
 
 /**
  * The admin panel writes at runtime, and a serverless filesystem is read-only —
@@ -126,9 +127,9 @@ let cached: Storage | null = null;
 export function storage(): Storage {
   if (cached) return cached;
 
-  const mode = process.env.STORAGE ?? "fs";
+  const mode = env("STORAGE") ?? "fs";
   if (mode === "blob") {
-    const token = process.env.BLOB_READ_WRITE_TOKEN;
+    const token = env("BLOB_READ_WRITE_TOKEN");
     if (!token) throw new Error("STORAGE=blob needs BLOB_READ_WRITE_TOKEN.");
     cached = blobStorage(token);
   } else {
