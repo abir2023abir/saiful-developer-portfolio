@@ -7,8 +7,13 @@ project cards, per-project case studies, and a contact form whose messages land 
 Ten projects, eight with real screenshots. Full metadata, OG cards, sitemap, robots and
 JSON-LD. Audited to WCAG AA.
 
+**Live:** https://saiful-developer-portfolio.vercel.app
+**Repo:** https://github.com/abir2023abir/saiful-developer-portfolio
+
 **Stack:** Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 ·
-Framer Motion · Lenis
+Framer Motion · Lenis · sharp
+
+Deployed from `main` — every push to that branch ships.
 
 ## Run it
 
@@ -90,8 +95,16 @@ Content is read and written through `src/lib/storage.ts`, which picks a backend 
 | `fs` (default) | `./content` and `./public/projects` | local dev, a VPS, anything with a writable disk |
 | `blob` | Vercel Blob, via `BLOB_READ_WRITE_TOKEN` | Vercel and other serverless hosts, whose filesystem is read-only at runtime |
 
-Also set `NEXT_PUBLIC_SITE_URL` so metadata, `sitemap.xml` and `robots.txt` emit the real
-origin, and the three admin variables. `.env.example` lists everything.
+`NEXT_PUBLIC_SITE_URL` is optional on Vercel — `src/lib/site-url.ts` falls back to the
+platform's own production URL — but set it once a custom domain is attached.
+
+**The three admin variables are not in the repo and do not deploy with it.** Until
+`ADMIN_USER`, `ADMIN_PASSWORD_HASH` and `AUTH_SECRET` are set in the host's environment,
+the sign-in form will simply reject every attempt. `.env.example` lists them.
+
+Saving from the admin panel needs a writable store. On Vercel that means `STORAGE=blob`
+plus `BLOB_READ_WRITE_TOKEN` from a Blob store; without it the filesystem adapter refuses
+the write and the form says so rather than failing silently.
 
 The Blob adapter is written and typed but has not been run against a live store — exercise
 all three operations once before trusting it.
