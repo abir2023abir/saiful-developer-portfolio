@@ -2,7 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createSession, currentAdmin, destroySession, verifyCredentials } from "@/lib/auth";
+import {
+  createSession,
+  currentAdmin,
+  destroySession,
+  verifyCredentials,
+} from "@/lib/auth";
 import { readContent, updateContent } from "@/lib/content";
 import { deleteMessage as removeMessage, setRead } from "@/lib/messages";
 import type { Project } from "@/lib/types";
@@ -18,6 +23,20 @@ function refresh() {
   revalidatePath("/", "layout");
 }
 
+/**
+ * Storage can refuse a write — a read-only serverless filesystem is the common
+ * case — and that has to reach the form as a message, not a 500.
+ */
+async function saved(work: () => Promise<unknown>): Promise<ActionState> {
+  try {
+    await work();
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Could not save." };
+  }
+  refresh();
+  return { ok: "Saved." };
+}
+
 const str = (form: FormData, key: string) => String(form.get(key) ?? "").trim();
 const list = (form: FormData, key: string) =>
   str(form, key)
@@ -25,11 +44,15 @@ const list = (form: FormData, key: string) =>
     .map((s) => s.trim())
     .filter(Boolean);
 
-export async function login(_prev: ActionState, form: FormData): Promise<ActionState> {
+export async function login(
+  _prev: ActionState,
+  form: FormData,
+): Promise<ActionState> {
   const username = str(form, "username");
   const password = String(form.get("password") ?? "");
 
-  if (!username || !password) return { error: "Enter your username and password." };
+  if (!username || !password)
+    return { error: "Enter your username and password." };
 
   try {
     if (!verifyCredentials(username, password)) {
@@ -48,54 +71,64 @@ export async function logout(): Promise<void> {
   redirect("/admin/login");
 }
 
-export async function saveSite(_prev: ActionState, form: FormData): Promise<ActionState> {
+export async function saveSite(
+  _prev: ActionState,
+  form: FormData,
+): Promise<ActionState> {
   await requireAdmin();
 
-  await updateContent((c) => ({
-    ...c,
-    site: {
-      ...c.site,
-      name: str(form, "name") || c.site.name,
-      role: str(form, "role"),
-      email: str(form, "email"),
-      location: str(form, "location"),
-      tagline: str(form, "tagline").split("\n").map((l) => l.trim()).filter(Boolean),
-      aboutHeading: str(form, "aboutHeading"),
-      aboutBody: str(form, "aboutBody"),
-      github: str(form, "github"),
-      linkedin: str(form, "linkedin"),
-      upwork: str(form, "upwork"),
-      stack: list(form, "stack"),
-    },
-  }));
-
-  refresh();
-  return { ok: "Saved." };
-}
-
-export async function saveHighlights(_prev: ActionState, form: FormData): Promise<ActionState> {
-  await requireAdmin();
-
-  await updateContent((c) => ({
-    ...c,
-    stats: c.stats.map((s, i) => ({
-      label: str(form, `stat-label-${i}`) || s.label,
-      value: str(form, `stat-value-${i}`) || s.value,
-      body: str(form, `stat-body-${i}`) || s.body,
+  return saved(() =>
+    updateContent((c) => ({
+      ...c,
+      site: {
+        ...c.site,
+        name: str(form, "name") || c.site.name,
+        role: str(form, "role"),
+        email: str(form, "email"),
+        location: str(form, "location"),
+        tagline: str(form, "tagline")
+          .split("\n")
+          .map((l) => l.trim())
+          .filter(Boolean),
+        aboutHeading: str(form, "aboutHeading"),
+        aboutBody: str(form, "aboutBody"),
+        github: str(form, "github"),
+        linkedin: str(form, "linkedin"),
+        upwork: str(form, "upwork"),
+        stack: list(form, "stack"),
+      },
     })),
-    testimonial: {
-      quote: str(form, "quote"),
-      name: str(form, "author"),
-      role: str(form, "authorRole"),
-      rating: str(form, "rating"),
-    },
-  }));
-
-  refresh();
-  return { ok: "Saved." };
+  );
 }
 
-export async function saveServices(_prev: ActionState, form: FormData): Promise<ActionState> {
+export async function saveHighlights(
+  _prev: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  await requireAdmin();
+
+  return saved(() =>
+    updateContent((c) => ({
+      ...c,
+      stats: c.stats.map((s, i) => ({
+        label: str(form, `stat-label-${i}`) || s.label,
+        value: str(form, `stat-value-${i}`) || s.value,
+        body: str(form, `stat-body-${i}`) || s.body,
+      })),
+      testimonial: {
+        quote: str(form, "quote"),
+        name: str(form, "author"),
+        role: str(form, "authorRole"),
+        rating: str(form, "rating"),
+      },
+    })),
+  );
+}
+
+export async function saveServices(
+  _prev: ActionState,
+  form: FormData,
+): Promise<ActionState> {
   await requireAdmin();
 
   const { services } = await readContent();
@@ -107,9 +140,7 @@ export async function saveServices(_prev: ActionState, form: FormData): Promise<
     }))
     .filter((s) => s.title);
 
-  await updateContent((c) => ({ ...c, services: next }));
-  refresh();
-  return { ok: "Saved." };
+  return saved(() => updateContent((c) => ({ ...c, services: next })));
 }
 
 export async function addService(): Promise<void> {
@@ -118,7 +149,11 @@ export async function addService(): Promise<void> {
     ...c,
     services: [
       ...c.services,
-      { n: String(c.services.length + 1).padStart(2, "0"), title: "New service", body: "" },
+      {
+        n: String(c.services.length + 1).padStart(2, "0"),
+        title: "New service",
+        body: "",
+      },
     ],
   }));
   refresh();
@@ -127,7 +162,10 @@ export async function addService(): Promise<void> {
 export async function deleteService(formData: FormData): Promise<void> {
   await requireAdmin();
   const index = Number(formData.get("index"));
-  await updateContent((c) => ({ ...c, services: c.services.filter((_, i) => i !== index) }));
+  await updateContent((c) => ({
+    ...c,
+    services: c.services.filter((_, i) => i !== index),
+  }));
   refresh();
 }
 
@@ -139,7 +177,10 @@ function slugify(value: string): string {
     .slice(0, 60);
 }
 
-export async function saveProject(_prev: ActionState, form: FormData): Promise<ActionState> {
+export async function saveProject(
+  _prev: ActionState,
+  form: FormData,
+): Promise<ActionState> {
   await requireAdmin();
 
   const original = str(form, "originalSlug");
@@ -147,10 +188,15 @@ export async function saveProject(_prev: ActionState, form: FormData): Promise<A
   if (!title) return { error: "A project needs a title." };
 
   const slug = slugify(str(form, "slug") || title);
-  if (!slug) return { error: "That title does not make a usable URL — add some letters." };
+  if (!slug)
+    return {
+      error: "That title does not make a usable URL — add some letters.",
+    };
 
   const content = await readContent();
-  const clash = content.projects.find((p) => p.slug === slug && p.slug !== original);
+  const clash = content.projects.find(
+    (p) => p.slug === slug && p.slug !== original,
+  );
   if (clash) return { error: `Another project already uses /work/${slug}.` };
 
   const tintFrom = str(form, "tintFrom") || "#e8461c";
@@ -173,25 +219,30 @@ export async function saveProject(_prev: ActionState, form: FormData): Promise<A
     featured: form.get("featured") === "on",
   };
 
-  await updateContent((c) => {
-    const exists = c.projects.some((p) => p.slug === original);
-    return {
-      ...c,
-      projects: exists
-        ? c.projects.map((p) => (p.slug === original ? next : p))
-        : [...c.projects, next],
-    };
-  });
+  const outcome = await saved(() =>
+    updateContent((c) => {
+      const exists = c.projects.some((p) => p.slug === original);
+      return {
+        ...c,
+        projects: exists
+          ? c.projects.map((p) => (p.slug === original ? next : p))
+          : [...c.projects, next],
+      };
+    }),
+  );
+  if (outcome.error) return outcome;
 
-  refresh();
   if (slug !== original) redirect(`/admin/projects/${slug}`);
-  return { ok: "Saved." };
+  return outcome;
 }
 
 export async function deleteProject(formData: FormData): Promise<void> {
   await requireAdmin();
   const slug = String(formData.get("slug") ?? "");
-  await updateContent((c) => ({ ...c, projects: c.projects.filter((p) => p.slug !== slug) }));
+  await updateContent((c) => ({
+    ...c,
+    projects: c.projects.filter((p) => p.slug !== slug),
+  }));
   refresh();
   redirect("/admin/projects");
 }
@@ -215,7 +266,10 @@ export async function moveProject(formData: FormData): Promise<void> {
 
 export async function toggleMessage(formData: FormData): Promise<void> {
   await requireAdmin();
-  await setRead(String(formData.get("id") ?? ""), formData.get("read") === "true");
+  await setRead(
+    String(formData.get("id") ?? ""),
+    formData.get("read") === "true",
+  );
   revalidatePath("/admin/messages");
 }
 

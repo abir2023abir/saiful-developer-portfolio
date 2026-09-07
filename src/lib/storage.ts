@@ -19,6 +19,21 @@ export type Storage = {
   putFile(name: string, body: Buffer, contentType: string): Promise<string>;
 };
 
+/**
+ * A serverless host's filesystem is read-only, so a save there fails with EROFS
+ * or EACCES. Say what to do about it instead of surfacing the raw errno.
+ */
+function readOnly(error: unknown): Error {
+  const code = (error as NodeJS.ErrnoException)?.code;
+  if (code === "EROFS" || code === "EACCES" || code === "EPERM") {
+    return new Error(
+      "This host's filesystem is read-only, so the change was not saved. " +
+        "Set STORAGE=blob and BLOB_READ_WRITE_TOKEN in the project's environment variables."
+    );
+  }
+  return error instanceof Error ? error : new Error("Could not write to storage.");
+}
+
 const fsStorage: Storage = {
   async readJson<T>(key: string): Promise<T | null> {
     try {
@@ -30,14 +45,22 @@ const fsStorage: Storage = {
 
   async writeJson(key, value) {
     const file = path.join(process.cwd(), "content", key);
-    await fs.mkdir(path.dirname(file), { recursive: true });
-    await fs.writeFile(file, JSON.stringify(value, null, 2), "utf8");
+    try {
+      await fs.mkdir(path.dirname(file), { recursive: true });
+      await fs.writeFile(file, JSON.stringify(value, null, 2), "utf8");
+    } catch (e) {
+      throw readOnly(e);
+    }
   },
 
   async putFile(name, body) {
     const dir = path.join(process.cwd(), "public", "projects");
-    await fs.mkdir(dir, { recursive: true });
-    await fs.writeFile(path.join(dir, name), body);
+    try {
+      await fs.mkdir(dir, { recursive: true });
+      await fs.writeFile(path.join(dir, name), body);
+    } catch (e) {
+      throw readOnly(e);
+    }
     return `/projects/${name}`;
   },
 };
