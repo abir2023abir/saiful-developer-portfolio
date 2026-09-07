@@ -130,3 +130,8 @@ Every colour pair in the design was measured against WCAG AA and the failures fi
 - Both stat figures and the whole testimonial are placeholders; the Upwork, GitHub and
   LinkedIn links point at bare domains; no project has a live or repo URL yet.
 - Lighthouse has not been run, and the Blob storage path has not been exercised.
+- The live deployment has no writable store, so admin edits and contact messages
+  are not persisted. Add Vercel Blob (STORAGE=blob + BLOB_READ_WRITE_TOKEN) for
+  admin saving, and/or Resend (RESEND_API_KEY + CONTACT_TO) so enquiries reach an
+  inbox. Until then the contact form tells visitors to email directly rather than
+  failing silently.
