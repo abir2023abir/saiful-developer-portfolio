@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { addMessage } from "@/lib/messages";
+import { readContent } from "@/lib/content";
 import { env } from "@/lib/env";
 
 export const runtime = "nodejs";
@@ -17,6 +18,25 @@ function rateLimited(ip: string): boolean {
   return recent.length > LIMIT;
 }
 
+async function forwardByEmail(name: string, email: string, body: string): Promise<boolean> {
+  const key = env("RESEND_API_KEY");
+  const to = env("CONTACT_TO");
+  if (!key || !to) return false;
+
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      from: env("CONTACT_FROM") ?? "Portfolio <onboarding@resend.dev>",
+      to: [to],
+      reply_to: email,
+      subject: `Project enquiry from ${name}`,
+      text: `${body}\n\n— ${name} <${email}>`,
+    }),
+  });
+  return res.ok;
+}
+
 export async function POST(request: Request) {
   const ip =
     request.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
@@ -24,7 +44,10 @@ export async function POST(request: Request) {
     "local";
 
   if (rateLimited(ip)) {
-    return NextResponse.json({ error: "Too many messages. Try again in a minute." }, { status: 429 });
+    return NextResponse.json(
+      { error: "Too many messages. Try again in a minute." },
+      { status: 429 },
+    );
   }
 
   let payload: unknown;
@@ -49,33 +72,48 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Please enter your name." }, { status: 400 });
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) || email.length > 200) {
-    return NextResponse.json({ error: "That email address does not look right." }, { status: 400 });
+    return NextResponse.json(
+      { error: "That email address does not look right." },
+      { status: 400 },
+    );
   }
   if (body.length < 10 || body.length > 5000) {
-    return NextResponse.json({ error: "Tell me a little more — at least ten characters." }, { status: 400 });
+    return NextResponse.json(
+      { error: "Tell me a little more — at least ten characters." },
+      { status: 400 },
+    );
   }
 
-  await addMessage({ name, email, body });
+  // Two independent delivery routes, and a message only has to survive one of
+  // them. The store is read-only on a serverless host unless Blob is
+  // configured, and email needs a Resend key — neither is guaranteed, so
+  // neither is allowed to take the other down with it.
+  let stored = false;
+  let emailed = false;
 
-  // Optional: also forward by email when a Resend key is configured.
-  const key = env("RESEND_API_KEY");
-  const to = env("CONTACT_TO");
-  if (key && to) {
-    try {
-      await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          from: env("CONTACT_FROM") ?? "Portfolio <onboarding@resend.dev>",
-          to: [to],
-          reply_to: email,
-          subject: `Project enquiry from ${name}`,
-          text: `${body}\n\n— ${name} <${email}>`,
-        }),
-      });
-    } catch {
-      // The message is already saved; a mail failure must not fail the request.
-    }
+  try {
+    await addMessage({ name, email, body });
+    stored = true;
+  } catch {
+    // fall through to email
+  }
+
+  try {
+    emailed = await forwardByEmail(name, email, body);
+  } catch {
+    // fall through to the failure response
+  }
+
+  if (!stored && !emailed) {
+    // Losing an enquiry silently is the worst outcome, so say so and hand the
+    // visitor an address that does not depend on this server.
+    const { site } = await readContent();
+    return NextResponse.json(
+      {
+        error: `Sorry — I could not save your message. Please email me directly at ${site.email}.`,
+      },
+      { status: 503 },
+    );
   }
 
   return NextResponse.json({ ok: true });
