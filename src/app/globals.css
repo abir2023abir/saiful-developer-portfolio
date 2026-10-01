@@ -9,6 +9,8 @@
   --color-ink: #0a0a0a;
   --color-paper: #f4f3f1;
   --color-smoke: #e8e6e2;
+  /* WhatsApp green dark enough that a white icon clears contrast. */
+  --color-whatsapp: #0e7a62;
 
   --font-display: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
   --font-sans: var(--font-inter-tight), "Helvetica Neue", Arial, sans-serif;
