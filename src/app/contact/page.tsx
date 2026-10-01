@@ -4,6 +4,7 @@ import Reveal from "@/components/Reveal";
 import ContactForm from "@/components/ContactForm";
 import { SectionLabel } from "@/components/sections";
 import { readContent } from "@/lib/content";
+import { WHATSAPP_DISPLAY, whatsAppHref } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -47,6 +48,14 @@ export default async function ContactPage() {
                   className="font-display text-lg font-bold tracking-tight underline decoration-brand decoration-2 underline-offset-4"
                 >
                   {site.email}
+                </a>
+                <a
+                  href={whatsAppHref()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-display text-lg font-bold tracking-tight underline decoration-brand decoration-2 underline-offset-4"
+                >
+                  WhatsApp · {WHATSAPP_DISPLAY}
                 </a>
                 <a
                   href={site.upwork}

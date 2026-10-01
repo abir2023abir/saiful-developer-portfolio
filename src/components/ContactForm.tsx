@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { SiteSettings } from "@/lib/types";
+import { enquiryText, whatsAppHref } from "@/lib/whatsapp";
 
 type State = "idle" | "sending" | "sent" | "error";
 
@@ -11,14 +12,25 @@ const field =
 export default function ContactForm({ site }: { site: SiteSettings }) {
   const [state, setState] = useState<State>("idle");
   const [error, setError] = useState("");
+  const [waHref, setWaHref] = useState("");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
     const data = Object.fromEntries(new FormData(form));
+    const name = String(data.name ?? "");
+    const email = String(data.email ?? "");
+    const message = String(data.message ?? "");
+    const href = whatsAppHref(enquiryText(name, email, message));
+
+    // Open during the click, before the request returns. A window opened
+    // after await is what browsers block, and then the note never reaches
+    // WhatsApp.
+    const chat = window.open("about:blank", "_blank");
 
     setState("sending");
     setError("");
+    setWaHref("");
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -27,9 +39,12 @@ export default function ContactForm({ site }: { site: SiteSettings }) {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? "Something went wrong.");
+      if (chat) chat.location.href = href;
+      else setWaHref(href);
       form.reset();
       setState("sent");
     } catch (err) {
+      chat?.close();
       setError(err instanceof Error ? err.message : "Something went wrong.");
       setState("error");
     }
@@ -111,7 +126,21 @@ export default function ContactForm({ site }: { site: SiteSettings }) {
         <p aria-live="polite" className="min-h-[1.25rem] text-center text-xs">
           {state === "sent" && (
             <span className="text-emerald-700">
-              Thank you — your message landed. I reply within a day.
+              Saved. WhatsApp opened with the same message — press send there
+              and it reaches me too.
+              {waHref && (
+                <>
+                  {" "}
+                  <a
+                    href={waHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline"
+                  >
+                    Open WhatsApp
+                  </a>
+                </>
+              )}
             </span>
           )}
           {state === "error" && <span className="text-brand-ink">{error}</span>}

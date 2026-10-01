@@ -1,9 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-
-/** Bangladesh mobile, leading 0 dropped, country code added. */
-const WHATSAPP = "https://wa.me/8801410210153";
+import { WHATSAPP_DISPLAY, whatsAppHref } from "@/lib/whatsapp";
 
 /**
  * Stays pinned to the bottom-right of the viewport, including while the page
@@ -15,10 +13,10 @@ export default function WhatsAppButton() {
 
   return (
     <a
-      href={WHATSAPP}
+      href={whatsAppHref()}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="WhatsApp, 01410210153"
+      aria-label={`WhatsApp, ${WHATSAPP_DISPLAY}`}
       className="fixed bottom-5 right-5 z-[70] grid h-14 w-14 place-items-center rounded-full bg-whatsapp text-white shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-transform duration-300 hover:scale-105 focus-visible:outline-white"
     >
       <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true">
