@@ -1,15 +1,46 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { motion, useMotionValue, useSpring, type MotionValue } from "framer-motion";
 
 type Mode = "idle" | "link" | "view" | "text";
 
+/** A brand dot that arrives late, so a fast mouse leaves a visible trail. */
+function TrailDot({
+  x,
+  y,
+  stiffness,
+  size,
+  visible,
+}: {
+  x: MotionValue<number>;
+  y: MotionValue<number>;
+  stiffness: number;
+  size: number;
+  visible: boolean;
+}) {
+  const sx = useSpring(x, { stiffness, damping: 22, mass: 0.6 });
+  const sy = useSpring(y, { stiffness, damping: 22, mass: 0.6 });
+
+  return (
+    <motion.div
+      aria-hidden
+      className="pointer-events-none fixed left-0 top-0 z-[89]"
+      style={{ x: sx, y: sy }}
+      animate={{ opacity: visible ? 0.9 : 0 }}
+    >
+      <span
+        className="block -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand"
+        style={{ width: size, height: size }}
+      />
+    </motion.div>
+  );
+}
+
 /**
- * Two rings chase the pointer at different springs, with a bead orbiting the
- * outer one. Over a project card it opens into a VIEW badge. Touch and
- * reduced-motion get the native cursor — a custom one would sit stale in
- * the corner, or keep moving when the person asked it not to.
+ * A dot, a lagging ring and a short trail follow the pointer. Over a project
+ * card the ring opens into a VIEW badge. Touch keeps the system cursor — a
+ * custom one would sit stale in the corner.
  */
 export default function Cursor() {
   const [enabled, setEnabled] = useState(false);
@@ -28,9 +59,7 @@ export default function Cursor() {
   const ghostY = useSpring(y, { stiffness: 78, damping: 16, mass: 0.85 });
 
   useEffect(() => {
-    const fine =
-      window.matchMedia("(pointer: fine)").matches &&
-      !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const fine = window.matchMedia("(pointer: fine)").matches;
     if (!fine) return;
     setEnabled(true);
     document.documentElement.classList.add("has-cursor");
@@ -76,11 +105,16 @@ export default function Cursor() {
   const size = mode === "view" ? 88 : mode === "link" ? 54 : 18;
   const showChrome = visible && mode !== "text";
 
+  const trail = visible && mode !== "text";
+
   return (
     <>
+      <TrailDot x={x} y={y} stiffness={180} size={10} visible={trail} />
+      <TrailDot x={x} y={y} stiffness={120} size={8} visible={trail} />
+      <TrailDot x={x} y={y} stiffness={70} size={6} visible={trail} />
       <motion.div
         aria-hidden
-        className="pointer-events-none fixed left-0 top-0 z-[90] hidden mix-blend-difference lg:block"
+        className="pointer-events-none fixed left-0 top-0 z-[90] mix-blend-difference"
         style={{ x: ghostX, y: ghostY }}
         animate={{ opacity: showChrome ? 1 : 0 }}
         transition={{ duration: 0.25 }}
@@ -113,7 +147,7 @@ export default function Cursor() {
 
       <motion.div
         aria-hidden
-        className="pointer-events-none fixed left-0 top-0 z-[91] hidden lg:block"
+        className="pointer-events-none fixed left-0 top-0 z-[91]"
         style={{ x: ringX, y: ringY }}
         animate={{ opacity: showChrome ? 1 : 0 }}
         transition={{ duration: 0.2 }}
@@ -139,7 +173,7 @@ export default function Cursor() {
 
       <motion.div
         aria-hidden
-        className="pointer-events-none fixed left-0 top-0 z-[92] hidden mix-blend-difference lg:block"
+        className="pointer-events-none fixed left-0 top-0 z-[92] mix-blend-difference"
         style={{ x: dotX, y: dotY }}
         animate={{ opacity: visible && mode !== "view" ? 1 : 0 }}
       >

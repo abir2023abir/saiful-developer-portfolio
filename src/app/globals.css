@@ -64,7 +64,8 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .animate-marquee { animation: none; }
+  /* The tech strip under the hero is meant to keep moving. The owner asked
+     for that scroll even when the system prefers less motion. */
 }
 
 ::selection {
@@ -103,9 +104,8 @@ body {
   top: 1rem;
 }
 
-/* The custom cursor replaces the system one only on a fine pointer at desktop
-   size. Inputs keep the text caret so forms stay usable. */
-@media (pointer: fine) and (min-width: 1024px) {
+/* The custom cursor replaces the system one on a mouse. Inputs keep the caret. */
+@media (pointer: fine) {
   html.has-cursor,
   html.has-cursor * {
     cursor: none !important;
