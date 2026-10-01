@@ -2,7 +2,7 @@ import { HighlightsForm, SiteForm } from "@/components/admin/SiteForm";
 import { readContent } from "@/lib/content";
 
 export default async function SitePage() {
-  const { site, stats, testimonial } = await readContent();
+  const { site, stats, testimonials } = await readContent();
 
   return (
     <div className="space-y-14">
@@ -15,9 +15,9 @@ export default async function SitePage() {
 
       <section>
         <h2 className="mb-6 font-display text-xl font-bold tracking-tight">
-          Stats & testimonial
+          Stats & reviews
         </h2>
-        <HighlightsForm stats={stats} testimonial={testimonial} />
+        <HighlightsForm stats={stats} testimonials={testimonials} />
       </section>
     </div>
   );

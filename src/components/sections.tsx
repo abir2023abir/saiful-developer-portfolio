@@ -48,16 +48,25 @@ export function SectionLabel({
   );
 }
 
+function initials(name: string) {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0]?.toUpperCase() ?? "")
+    .join("");
+}
+
 export function Impact({
   heading,
   body,
   stats,
-  testimonial,
+  testimonials,
 }: {
   heading: string;
   body: string;
   stats: Stat[];
-  testimonial: Testimonial;
+  testimonials: Testimonial[];
 }) {
   // Pipes mark the line breaks; the even-indexed words carry the grey.
   const parts = heading.split("|");
@@ -108,7 +117,7 @@ export function Impact({
         </div>
 
         <Reveal delay={0.16}>
-          <figure className="relative flex h-full flex-col justify-end overflow-hidden border border-black/10 bg-white p-8">
+          <div className="relative h-full overflow-hidden border border-black/10 bg-white p-4 sm:p-5">
             <div
               className="pointer-events-none absolute inset-0 opacity-70"
               style={{
@@ -118,33 +127,42 @@ export function Impact({
               }}
               aria-hidden
             />
-            <div className="relative">
-              <div className="flex items-center gap-3">
-                <span className="text-brand-ink" aria-hidden>
-                  ★★★★★
-                </span>
-                <span className="text-sm font-semibold">
-                  {testimonial.rating}
-                </span>
-              </div>
-              <blockquote className="mt-5 max-w-xl text-lg leading-relaxed text-black/80">
-                &ldquo;{testimonial.quote}&rdquo;
-              </blockquote>
-              <figcaption className="mt-6 flex items-center gap-3">
-                <span className="grid h-10 w-10 place-items-center rounded-full bg-ink text-xs font-semibold text-white">
-                  ✳
-                </span>
-                <span className="leading-tight">
-                  <span className="block text-sm font-semibold">
-                    {testimonial.name}
-                  </span>
-                  <span className="block text-xs text-black/55">
-                    {testimonial.role}
-                  </span>
-                </span>
-              </figcaption>
+            <div className="relative grid gap-3 sm:grid-cols-2">
+              {testimonials.map((review) => (
+                <figure
+                  key={review.name}
+                  className="flex h-full flex-col justify-between border border-black/10 bg-white/85 p-5 backdrop-blur-sm"
+                >
+                  <div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm text-brand-ink" aria-hidden>
+                        ★★★★★
+                      </span>
+                      <span className="text-sm font-semibold">
+                        {review.rating}
+                      </span>
+                    </div>
+                    <blockquote className="mt-4 text-[0.95rem] leading-relaxed text-black/80">
+                      &ldquo;{review.quote}&rdquo;
+                    </blockquote>
+                  </div>
+                  <figcaption className="mt-5 flex items-center gap-3">
+                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-ink text-xs font-semibold text-white">
+                      {initials(review.name)}
+                    </span>
+                    <span className="leading-tight">
+                      <span className="block text-sm font-semibold">
+                        {review.name}
+                      </span>
+                      <span className="block text-xs text-black/55">
+                        {review.role}
+                      </span>
+                    </span>
+                  </figcaption>
+                </figure>
+              ))}
             </div>
-          </figure>
+          </div>
         </Reveal>
       </div>
     </section>

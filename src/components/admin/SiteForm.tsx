@@ -65,10 +65,10 @@ export function SiteForm({ site }: { site: SiteSettings }) {
 
 export function HighlightsForm({
   stats,
-  testimonial,
+  testimonials,
 }: {
   stats: Stat[];
-  testimonial: Testimonial;
+  testimonials: Testimonial[];
 }) {
   return (
     <ActionForm action={saveHighlights} className="space-y-8">
@@ -99,28 +99,41 @@ export function HighlightsForm({
         ))}
       </div>
 
-      <fieldset className="space-y-4 border border-black/10 bg-white p-5">
-        <legend className="px-2 text-sm font-semibold">Testimonial</legend>
-        <Field
-          label="Quote"
-          name="quote"
-          rows={3}
-          defaultValue={testimonial.quote}
-        />
-        <div className="grid gap-4 sm:grid-cols-3">
-          <Field label="Name" name="author" defaultValue={testimonial.name} />
-          <Field
-            label="Role"
-            name="authorRole"
-            defaultValue={testimonial.role}
-          />
-          <Field
-            label="Rating"
-            name="rating"
-            defaultValue={testimonial.rating}
-          />
-        </div>
-      </fieldset>
+      <div className="grid gap-6 lg:grid-cols-2">
+        {testimonials.map((review, i) => (
+          <fieldset
+            key={i}
+            className="space-y-4 border border-black/10 bg-white p-5"
+          >
+            <legend className="px-2 text-sm font-semibold">
+              Review {i + 1}
+            </legend>
+            <Field
+              label="Quote"
+              name={`quote-${i}`}
+              rows={3}
+              defaultValue={review.quote}
+            />
+            <div className="grid gap-4 sm:grid-cols-3">
+              <Field
+                label="Name"
+                name={`author-${i}`}
+                defaultValue={review.name}
+              />
+              <Field
+                label="Role"
+                name={`authorRole-${i}`}
+                defaultValue={review.role}
+              />
+              <Field
+                label="Rating"
+                name={`rating-${i}`}
+                defaultValue={review.rating}
+              />
+            </div>
+          </fieldset>
+        ))}
+      </div>
     </ActionForm>
   );
 }

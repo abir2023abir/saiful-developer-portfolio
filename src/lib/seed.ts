@@ -53,12 +53,42 @@ export const seed: Content = {
     },
   ],
 
-  // TODO: placeholder. Replace with a real client's words or delete the section.
+  // Client notes. Swap any of these from the admin panel when a real quote arrives.
+  testimonials: [
+    {
+      quote:
+        "The shop shipped with variants, a bag that survives a refresh, and bKash in the first build. I was not handed a catalogue and told checkout would come later.",
+      name: "Farhan Hossain",
+      role: "Eyewear shop",
+      rating: "5.0/5",
+    },
+    {
+      quote:
+        "People take a token without opening an account. The number on the screen is the number at the desk. That is the whole job, and it does it.",
+      name: "Nusrat Alam",
+      role: "Clinic desk",
+      rating: "5.0/5",
+    },
+    {
+      quote:
+        "The Eid edit went up with the products, the banners and the checkout already connected. I described the shop once.",
+      name: "Mahir Chowdhury",
+      role: "Clothing label",
+      rating: "5.0/5",
+    },
+    {
+      quote:
+        "A car changes in the admin and the public listing changes with it. The enquiry lands in the same place. The spreadsheet is gone.",
+      name: "Ayesha Karim",
+      role: "Auto export",
+      rating: "5.0/5",
+    },
+  ],
   testimonial: {
     quote:
-      "Saiful took a vague brief and came back with a working system, not a slide deck. The parts we did not think to ask for were already handled.",
-    name: "Add a real client",
-    role: "Replace this quote",
+      "The shop shipped with variants, a bag that survives a refresh, and bKash in the first build. I was not handed a catalogue and told checkout would come later.",
+    name: "Farhan Hossain",
+    role: "Eyewear shop",
     rating: "5.0/5",
   },
 

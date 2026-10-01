@@ -152,11 +152,23 @@ export async function saveHighlights(
         value: str(form, `stat-value-${i}`) || s.value,
         body: str(form, `stat-body-${i}`) || s.body,
       })),
+      testimonials: c.testimonials.map((review, i) => ({
+        quote: str(form, `quote-${i}`) || review.quote,
+        name: str(form, `author-${i}`) || review.name,
+        role: str(form, `authorRole-${i}`) || review.role,
+        rating: str(form, `rating-${i}`) || review.rating,
+      })),
       testimonial: {
-        quote: str(form, "quote"),
-        name: str(form, "author"),
-        role: str(form, "authorRole"),
-        rating: str(form, "rating"),
+        quote: str(form, "quote-0") || c.testimonials[0]?.quote || c.testimonial.quote,
+        name: str(form, "author-0") || c.testimonials[0]?.name || c.testimonial.name,
+        role:
+          str(form, "authorRole-0") ||
+          c.testimonials[0]?.role ||
+          c.testimonial.role,
+        rating:
+          str(form, "rating-0") ||
+          c.testimonials[0]?.rating ||
+          c.testimonial.rating,
       },
     })),
   );

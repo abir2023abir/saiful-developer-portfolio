@@ -18,7 +18,14 @@ export async function readContent(): Promise<Content> {
     site: { ...seed.site, ...parsed.site },
     services: parsed.services ?? seed.services,
     stats: parsed.stats ?? seed.stats,
-    testimonial: { ...seed.testimonial, ...parsed.testimonial },
+    testimonials:
+      parsed.testimonials && parsed.testimonials.length > 0
+        ? parsed.testimonials
+        : seed.testimonials,
+    testimonial: {
+      ...(parsed.testimonials?.[0] ?? seed.testimonials[0]),
+      ...parsed.testimonial,
+    },
     projects: parsed.projects ?? seed.projects,
   };
 }

@@ -55,6 +55,8 @@ export type Content = {
   site: SiteSettings;
   services: Service[];
   stats: Stat[];
+  /** First review. Kept so older saves still have a single quote. */
   testimonial: Testimonial;
+  testimonials: Testimonial[];
   projects: Project[];
 };

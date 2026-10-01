@@ -30,7 +30,7 @@ export default async function AdminHome() {
       href: "/admin/site",
       label: "Site & profile",
       value: "—",
-      note: "Name, tagline, links, stats, testimonial",
+      note: "Name, tagline, links, stats, reviews",
     },
   ];
 

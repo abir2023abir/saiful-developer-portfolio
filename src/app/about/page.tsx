@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutPage() {
-  const { site, stats, testimonial } = await readContent();
+  const { site, stats, testimonials } = await readContent();
 
   return (
     <PageShell>
@@ -60,7 +60,7 @@ export default async function AboutPage() {
         heading={site.aboutHeading}
         body={site.aboutBody}
         stats={stats}
-        testimonial={testimonial}
+        testimonials={testimonials}
       />
     </PageShell>
   );

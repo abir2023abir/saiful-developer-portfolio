@@ -14,7 +14,7 @@ export default async function Home() {
           heading={content.site.aboutHeading}
           body={content.site.aboutBody}
           stats={content.stats}
-          testimonial={content.testimonial}
+          testimonials={content.testimonials}
         />
         <Work projects={content.projects} limit={4} />
         <Services services={content.services} />
