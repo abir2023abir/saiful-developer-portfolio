@@ -9,8 +9,16 @@ import { motion, useReducedMotion } from "framer-motion";
  * page feels live without anything for the eye to fight while you type.
  */
 export default function LoginStage({ name }: { name: string }) {
-  const still = useReducedMotion();
+  const prefersReduced = useReducedMotion();
+  // The hook is null on the server and the real setting on the client, so
+  // branching on it during the first render mismatches the HTML. Start in
+  // motion, then freeze after mount if the visitor asked for it.
+  const [still, setStill] = useState(false);
   const [now, setNow] = useState<string | null>(null);
+
+  useEffect(() => {
+    setStill(Boolean(prefersReduced));
+  }, [prefersReduced]);
 
   useEffect(() => {
     const tick = () =>

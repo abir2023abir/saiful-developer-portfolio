@@ -102,3 +102,18 @@ body {
 .skip-link:focus {
   top: 1rem;
 }
+
+/* The custom cursor replaces the system one only on a fine pointer at desktop
+   size. Inputs keep the text caret so forms stay usable. */
+@media (pointer: fine) and (min-width: 1024px) {
+  html.has-cursor,
+  html.has-cursor * {
+    cursor: none !important;
+  }
+  html.has-cursor input,
+  html.has-cursor textarea,
+  html.has-cursor select,
+  html.has-cursor [contenteditable="true"] {
+    cursor: text !important;
+  }
+}
