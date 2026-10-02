@@ -10,7 +10,7 @@ export const seed: Content = {
     name: "Saiful Islam",
     role: "Full Stack Web Developer",
     email: "saifultwilight20@gmail.com",
-    location: "Dhaka, Bangladesh",
+    location: "Shonir Akhra, Dhaka-1236",
     tagline: [
       "I BUILD FULL-STACK WEB APPLICATIONS",
       "THAT ARE FAST, HONEST",

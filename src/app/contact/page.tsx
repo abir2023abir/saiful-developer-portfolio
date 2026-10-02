@@ -12,8 +12,22 @@ export const metadata: Metadata = {
     "Tell me what you are building. I reply with a scope, a timeline and the risky parts.",
 };
 
+/** Shonir Akhra, the quarter in Dhaka 1236. */
+const SHONIR_AKHRA = "23.70366,90.45088";
+
+function mapsFor(address: string) {
+  const named = address.replace(/\s/g, "").toLowerCase() === "shonirakhra,dhaka-1236";
+  const pin = named ? SHONIR_AKHRA : encodeURIComponent(address);
+  const query = encodeURIComponent(address);
+  return {
+    embed: `https://maps.google.com/maps?q=${pin}&hl=en&z=16&output=embed`,
+    open: `https://www.google.com/maps/search/?api=1&query=${named ? SHONIR_AKHRA : query}`,
+  };
+}
+
 export default async function ContactPage() {
   const { site } = await readContent();
+  const maps = mapsFor(site.location);
 
   return (
     <PageShell>
@@ -70,6 +84,36 @@ export default async function ContactPage() {
             </Reveal>
           </div>
         </div>
+
+        <Reveal>
+          <div className="mt-16 border border-black/10 bg-white">
+            <div className="flex flex-wrap items-end justify-between gap-4 px-6 py-5 sm:px-8">
+              <div>
+                <span className="eyebrow flex items-center gap-2 text-black/55">
+                  <span className="text-brand-ink">✳</span> Address
+                </span>
+                <p className="mt-2 font-display text-2xl font-bold tracking-tight sm:text-3xl">
+                  {site.location}
+                </p>
+              </div>
+              <a
+                href={maps.open}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="eyebrow border border-ink px-3 py-1.5 transition-colors hover:bg-ink hover:text-white"
+              >
+                Open in Maps ↗
+              </a>
+            </div>
+            <iframe
+              title={`Map of ${site.location}`}
+              src={maps.embed}
+              className="h-[320px] w-full border-t border-black/10 sm:h-[440px]"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </div>
+        </Reveal>
       </section>
     </PageShell>
   );
