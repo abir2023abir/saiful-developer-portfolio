@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import PageShell from "@/components/PageShell";
 import Reveal from "@/components/Reveal";
+import SplitLines from "@/components/SplitLines";
 import ContactForm from "@/components/ContactForm";
 import { SectionLabel } from "@/components/sections";
 import { readContent } from "@/lib/content";
@@ -41,13 +42,12 @@ export default async function ContactPage() {
             <Reveal>
               <SectionLabel>Contact me</SectionLabel>
             </Reveal>
-            <Reveal delay={0.06}>
-              <h1 className="display mt-6 text-[13vw] leading-[0.84] sm:text-[7rem]">
-                Let&apos;s work
-                <br />
-                <span className="text-black/45">together.</span>
-              </h1>
-            </Reveal>
+            <SplitLines
+              as="h1"
+              lines={[{ text: "Let's work" }, { text: "together.", dim: true }]}
+              className="display mt-6 text-[13vw] leading-[0.84] sm:text-[7rem]"
+              delay={0.06}
+            />
             <Reveal delay={0.12}>
               <p className="mt-8 max-w-md text-[0.95rem] leading-relaxed text-black/65">
                 Tell me what you are building and what has to be true for it to

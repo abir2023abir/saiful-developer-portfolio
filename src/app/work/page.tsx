@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import PageShell from "@/components/PageShell";
 import PageHeader from "@/components/PageHeader";
+import Reveal from "@/components/Reveal";
+import SplitLines from "@/components/SplitLines";
 import { ProjectGrid } from "@/components/sections";
 import { readContent } from "@/lib/content";
 
@@ -12,17 +15,37 @@ export const metadata: Metadata = {
 
 export default async function WorkPage() {
   const { projects } = await readContent();
+  const live = projects.filter((p) => p.liveUrl).length;
 
   return (
     <PageShell>
       <PageHeader
-        label={`Portfolio (${String(projects.length).padStart(2, "0")})`}
+        label={`Portfolio (${String(projects.length).padStart(2, "0")})${live ? ` · ${live} live` : ""}`}
         title="Selected"
         tail="work."
-        lede="Every one of these is a working application rather than a mockup — schema, API, auth and interface. Open any of them for the problem it solves and how."
+        lede="Every one of these is a working application rather than a mockup — schema, API, auth and interface. The ones marked Live are running now: open one and visit the site yourself."
       />
       <section className="bg-paper px-6 pb-28 sm:px-10">
         <ProjectGrid projects={projects} />
+      </section>
+
+      <section className="border-t border-black/10 bg-paper px-6 py-24 text-center sm:px-10">
+        <Reveal>
+          <SplitLines
+            as="h2"
+            lines={[{ text: "Your project", tail: "next?" }]}
+            className="display text-[11vw] leading-[0.86] sm:text-[4.5rem]"
+          />
+          <Link
+            href="/contact"
+            className="group mt-10 inline-flex items-center gap-3 bg-ink px-8 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-brand"
+          >
+            Start a conversation
+            <span className="transition-transform duration-300 group-hover:translate-x-1">
+              →
+            </span>
+          </Link>
+        </Reveal>
       </section>
     </PageShell>
   );

@@ -3,7 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import {
+  motion,
+  useMotionValue,
+  useScroll,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import Magnetic from "./Magnetic";
 import Nav, { type NavLink } from "./Nav";
 import type { Content } from "@/lib/types";
@@ -30,11 +36,36 @@ export default function Hero({
   });
   const wordmarkY = useTransform(scrollYProgress, [0, 1], [0, -110]);
   const portraitY = useTransform(scrollYProgress, [0, 1], [0, -40]);
+  const portraitScale = useTransform(scrollYProgress, [0, 1], [1, 1.05]);
+
+  // A second, pointer-driven layer. The wordmark leans away and the portrait
+  // leans toward the cursor, which reads as one plane sitting behind another.
+  const pointerX = useMotionValue(0);
+  const pointerY = useMotionValue(0);
+  const drift = useSpring(pointerX, { stiffness: 60, damping: 18, mass: 0.6 });
+  const lift = useSpring(pointerY, { stiffness: 60, damping: 18, mass: 0.6 });
+  const wordmarkX = useTransform(drift, (v) => v * -18);
+  const wordmarkTilt = useTransform(lift, (v) => v * -12);
+  const portraitX = useTransform(drift, (v) => v * 10);
+  const portraitTilt = useTransform(lift, (v) => v * 7);
+
+  function follow(e: React.PointerEvent<HTMLElement>) {
+    if (e.pointerType !== "mouse") return;
+    pointerX.set(e.clientX / window.innerWidth - 0.5);
+    pointerY.set(e.clientY / window.innerHeight - 0.5);
+  }
+
+  function settle() {
+    pointerX.set(0);
+    pointerY.set(0);
+  }
 
   return (
     <section
       ref={section}
       id="top"
+      onPointerMove={follow}
+      onPointerLeave={settle}
       className="relative isolate min-h-[100svh] overflow-hidden bg-brand"
     >
       {/* Swiss grid: hairlines plus a crosshair at every intersection. */}
@@ -67,34 +98,41 @@ export default function Hero({
       {/* Ghosted wordmark sitting behind the portrait. */}
       <motion.div
         className="pointer-events-none absolute inset-x-0 top-[13%] z-0 flex justify-center"
-        style={{ y: wordmarkY }}
         initial={{ opacity: 0, scale: 1.06 }}
         animate={ready ? { opacity: 1, scale: 1 } : {}}
         transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
         aria-hidden
       >
-        <span className="display whitespace-nowrap text-[27vw] text-white/[0.16]">
-          {site.name.split(" ")[0]}
-        </span>
+        <motion.div style={{ y: wordmarkY }}>
+          <motion.span
+            style={{ x: wordmarkX, y: wordmarkTilt }}
+            className="display block whitespace-nowrap text-[27vw] text-white/[0.16]"
+          >
+            {site.name.split(" ")[0]}
+          </motion.span>
+        </motion.div>
       </motion.div>
 
       {/* Portrait, bottom-anchored so the head breaks above the wordmark. */}
       <motion.div
         className="absolute inset-x-0 bottom-0 z-10 flex justify-center"
-        style={{ y: portraitY }}
         initial={{ opacity: 0, y: 60 }}
         animate={ready ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 1.2, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
       >
-        <Image
-          src="/images/hero-portrait.png"
-          alt={`${site.name}, ${site.role}`}
-          width={1664}
-          height={1870}
-          priority
-          sizes="(max-width: 768px) 130vw, 92vh"
-          className="h-auto w-[112vw] max-w-none translate-x-[4vw] object-contain sm:h-[min(80svh,76vw)] sm:w-auto sm:translate-x-0"
-        />
+        <motion.div style={{ y: portraitY, scale: portraitScale }}>
+          <motion.div style={{ x: portraitX, y: portraitTilt }}>
+            <Image
+              src="/images/hero-portrait.png"
+              alt={`${site.name}, ${site.role}`}
+              width={1664}
+              height={1870}
+              priority
+              sizes="(max-width: 768px) 130vw, 92vh"
+              className="h-auto w-[112vw] max-w-none translate-x-[4vw] object-contain sm:h-[min(80svh,76vw)] sm:w-auto sm:translate-x-0"
+            />
+          </motion.div>
+        </motion.div>
       </motion.div>
 
       {/* Tagline */}

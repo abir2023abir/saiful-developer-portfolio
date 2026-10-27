@@ -1,12 +1,29 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import Reveal from "@/components/Reveal";
+import SplitLines from "@/components/SplitLines";
+import ParallaxMedia from "@/components/ParallaxMedia";
 import { readContent } from "@/lib/content";
+import { whatsAppHref } from "@/lib/whatsapp";
 
 type Params = { params: Promise<{ slug: string }> };
+
+/** The address as a visitor would type it. The admin panel accepts any text. */
+function host(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
+}
+
+/** Display caps run about 0.75em a letter; 5rem covers the widest gutters. */
+function titleSize(title: string): string {
+  const longest = Math.max(1, ...title.split(/\s+/).map((w) => w.length));
+  return `min(14vw, 7rem, calc((100vw - 5rem) / ${(longest * 0.75).toFixed(2)}))`;
+}
 
 export async function generateStaticParams() {
   const { projects } = await readContent();
@@ -64,32 +81,51 @@ export default async function CaseStudy({ params }: Params) {
               <span>✳</span> {project.category} · {project.year}
             </span>
           </Reveal>
-          <Reveal>
-            <h1 className="display mt-6 text-[14vw] leading-[0.84] text-white sm:text-[7rem]">
-              {project.title}
-            </h1>
-          </Reveal>
+          {/* A long single word ("Dermatology") at 14vw runs off a phone, so
+              the type is capped by the longest word as well as the screen. */}
+          <div style={{ fontSize: titleSize(project.title) }}>
+            <SplitLines
+              as="h1"
+              lines={[project.title]}
+              className="display mt-6 leading-[0.84] text-white"
+            />
+          </div>
           <Reveal delay={0.08}>
             <p className="mt-8 max-w-2xl text-[0.95rem] leading-relaxed text-white">
               {project.summary}
             </p>
           </Reveal>
+          {project.liveUrl && (
+            <Reveal delay={0.12}>
+              <div className="mt-10 flex flex-wrap items-center gap-x-5 gap-y-3">
+                <a
+                  href={project.liveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group inline-flex items-center gap-3 bg-white px-8 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-ink transition-colors hover:bg-brand hover:text-white"
+                >
+                  Visit the live site
+                  <span className="transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5">
+                    ↗
+                  </span>
+                </a>
+                <span className="eyebrow text-white/80">
+                  {host(project.liveUrl)}
+                </span>
+              </div>
+            </Reveal>
+          )}
         </div>
       </header>
 
       {project.image && (
         <Reveal>
           <div className="bg-paper px-6 py-12 sm:px-10">
-            <div className="relative aspect-16/10 w-full overflow-hidden border border-black/10">
-              <Image
-                src={project.image}
-                alt={`${project.title} interface`}
-                fill
-                sizes="100vw"
-                className="object-cover object-top"
-                priority
-              />
-            </div>
+            <ParallaxMedia
+              src={project.image}
+              alt={`${project.title} interface`}
+              priority
+            />
           </div>
         </Reveal>
       )}
@@ -122,7 +158,7 @@ export default async function CaseStudy({ params }: Params) {
           </div>
 
           <Reveal delay={0.1}>
-            <aside className="h-fit border border-black/10 bg-white p-6">
+            <aside className="h-fit border border-black/10 bg-white p-6 lg:sticky lg:top-28">
               <h2 className="eyebrow text-black/60">Details</h2>
               <dl className="mt-6 space-y-5 text-sm">
                 <div>
@@ -150,33 +186,67 @@ export default async function CaseStudy({ params }: Params) {
                 </div>
               </dl>
 
-              {(project.liveUrl || project.repoUrl) && (
-                <div className="mt-7 flex flex-col gap-2">
-                  {project.liveUrl && (
-                    <a
-                      href={project.liveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="bg-ink px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-brand"
-                    >
-                      Visit the live site ↗
-                    </a>
-                  )}
-                  {project.repoUrl && (
-                    <a
-                      href={project.repoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="border border-ink px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.16em] transition-colors hover:bg-ink hover:text-white"
-                    >
-                      Read the code ↗
-                    </a>
-                  )}
-                </div>
-              )}
+              <div className="mt-7 flex flex-col gap-2">
+                {project.liveUrl ? (
+                  <a
+                    href={project.liveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-ink px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-brand"
+                  >
+                    Visit the live site ↗
+                  </a>
+                ) : (
+                  /* Client builds without a public address can still be shown,
+                     on a call, to someone who asks. */
+                  <a
+                    href={whatsAppHref(
+                      `Hi Saiful, I saw ${project.title} on your portfolio. Could you show me a demo?`,
+                    )}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-ink px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-brand"
+                  >
+                    Ask for a live demo ↗
+                  </a>
+                )}
+                {project.repoUrl && (
+                  <a
+                    href={project.repoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="border border-ink px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.16em] transition-colors hover:bg-ink hover:text-white"
+                  >
+                    Read the code ↗
+                  </a>
+                )}
+              </div>
             </aside>
           </Reveal>
         </div>
+      </section>
+
+      <section className="border-t border-black/10 bg-paper px-6 py-24 text-center sm:px-10">
+        <Reveal>
+          <SplitLines
+            as="h2"
+            lines={[{ text: "Want something", tail: "like this?" }]}
+            className="display text-[11vw] leading-[0.86] sm:text-[4.5rem]"
+          />
+          <p className="mx-auto mt-6 max-w-md text-[0.95rem] leading-relaxed text-black/65">
+            Tell me what your business needs. The work is scoped in writing and
+            delivered on the date agreed.
+          </p>
+          <Link
+            href="/contact"
+            className="group mt-10 inline-flex items-center gap-3 bg-ink px-8 py-4 text-xs font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-brand"
+          >
+            Start a conversation
+            <span className="transition-transform duration-300 group-hover:translate-x-1">
+              →
+            </span>
+          </Link>
+        </Reveal>
       </section>
 
       <section className="border-t border-black/10 bg-paper px-6 py-16 sm:px-10">

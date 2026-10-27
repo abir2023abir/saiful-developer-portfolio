@@ -3,6 +3,7 @@ import { Archivo, Inter_Tight } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
 import Cursor from "@/components/Cursor";
+import ScrollRail from "@/components/ScrollRail";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { readContent } from "@/lib/content";
 import { siteUrl } from "@/lib/site-url";
@@ -70,6 +71,7 @@ export default async function RootLayout({
         </a>
         <SmoothScroll />
         <Cursor />
+        <ScrollRail />
         <WhatsAppButton />
         {children}
         <script

@@ -1,4 +1,5 @@
 import Reveal from "./Reveal";
+import SplitLines from "./SplitLines";
 import { SectionLabel } from "./sections";
 
 export default function PageHeader({
@@ -17,11 +18,12 @@ export default function PageHeader({
       <Reveal>
         <SectionLabel>{label}</SectionLabel>
       </Reveal>
-      <Reveal>
-        <h1 className="display mt-6 text-[13vw] leading-[0.84] sm:text-[7rem]">
-          {title} {tail && <span className="text-black/45">{tail}</span>}
-        </h1>
-      </Reveal>
+      <SplitLines
+        as="h1"
+        lines={[tail ? { text: title, tail } : { text: title }]}
+        className="display mt-6 text-[13vw] leading-[0.84] sm:text-[7rem]"
+        delay={0.05}
+      />
       {lede && (
         <Reveal delay={0.08}>
           <p className="mt-8 max-w-xl text-[0.95rem] leading-relaxed text-black/65">

@@ -158,7 +158,10 @@ export default function Cursor() {
             width: size,
             height: size,
             scale: down ? 0.9 : 1,
-            backgroundColor: mode === "view" ? "var(--color-brand)" : "transparent",
+            backgroundColor:
+              mode === "view"
+                ? "var(--color-brand)"
+                : "var(--color-brand-clear)",
           }}
           transition={{ type: "spring", stiffness: 340, damping: 26 }}
         >

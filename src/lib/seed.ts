@@ -39,11 +39,12 @@ export const seed: Content = {
     ],
   },
 
-  // TODO: both figures are placeholders. "10+" is the only one the work backs up.
+  // TODO: both figures are placeholders. "20+" is the only one the work backs up —
+  // the work page lists twenty.
   stats: [
     {
       label: "Projects shipped",
-      value: "10+",
+      value: "20+",
       body: "Applications built end to end — data model, API, auth and interface — not front-end mockups.",
     },
     {

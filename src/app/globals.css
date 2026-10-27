@@ -6,6 +6,9 @@
      4.4:1, this clears AA. */
   --color-brand-ink: #a52208;
   --color-brand-deep: #c8340f;
+  /* Brand at zero alpha: the cursor's fill animates to this, because the
+     keyword `transparent` is black at zero alpha and cannot be interpolated. */
+  --color-brand-clear: rgb(209 58 19 / 0);
   --color-ink: #0a0a0a;
   --color-paper: #f4f3f1;
   --color-smoke: #e8e6e2;
@@ -56,18 +59,24 @@ body {
   background-size: 25% 25%;
 }
 
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+/* The asterisk in every section label turns slowly, so a quiet page still has
+   one thing alive on it. */
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
 }
-.animate-marquee {
-  animation: marquee 32s linear infinite;
+.spin-slow {
+  display: inline-block;
+  animation: spin-slow 14s linear infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  /* The tech strip under the hero is meant to keep moving. The owner asked
-     for that scroll even when the system prefers less motion. */
+  .spin-slow { animation: none; }
+  /* Scroll-linked image drift. Done here rather than in a `useReducedMotion`
+     branch so server and client render the same element. */
+  .parallax { transform: none !important; }
+  /* The tech strip under the hero keeps moving — the owner asked for it — but
+     it stops reacting to scroll velocity. That lives in VelocityMarquee. */
 }
 
 ::selection {

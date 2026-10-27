@@ -1,10 +1,12 @@
 import Link from "next/link";
 import Reveal from "./Reveal";
 import ProjectCard from "./ProjectCard";
+import SplitLines from "./SplitLines";
+import Counter from "./Counter";
+import VelocityMarquee from "./VelocityMarquee";
 import type { Content, Project, Service, Stat, Testimonial } from "@/lib/types";
 
 export function Marquee({ stack }: { stack: string[] }) {
-  const row = [...stack, ...stack];
   return (
     <section className="border-b border-black/10 bg-paper py-10">
       <div className="flex items-center gap-10 px-6 sm:px-10">
@@ -14,16 +16,7 @@ export function Marquee({ stack }: { stack: string[] }) {
           with
         </p>
         <div className="relative flex-1 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_6%,black_94%,transparent)]">
-          <div className="animate-marquee flex w-max items-center gap-14">
-            {row.map((name, i) => (
-              <span
-                key={`${name}-${i}`}
-                className="whitespace-nowrap font-display text-xl font-bold tracking-tight text-black/45 sm:text-2xl"
-              >
-                {name}
-              </span>
-            ))}
-          </div>
+          <VelocityMarquee items={stack} />
         </div>
       </div>
     </section>
@@ -43,7 +36,7 @@ export function SectionLabel({
         dark ? "border border-white/20 text-white/70" : "bg-smoke"
       }`}
     >
-      <span className="text-brand-ink">✳</span> {children}
+      <span className="spin-slow text-brand-ink">✳</span> {children}
     </span>
   );
 }
@@ -78,19 +71,11 @@ export function Impact({
       </Reveal>
 
       <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_minmax(300px,26rem)] lg:items-end">
-        <Reveal>
-          <h2 className="display text-[11vw] leading-[0.85] sm:text-[6.5rem]">
-            {parts.map((part, i) => (
-              <span
-                key={part + i}
-                className={i % 2 ? "text-black/45" : undefined}
-              >
-                {part}
-                {i % 2 === 1 && i < parts.length - 1 ? <br /> : " "}
-              </span>
-            ))}
-          </h2>
-        </Reveal>
+        <SplitLines
+          as="h2"
+          lines={parts.map((part, i) => ({ text: part.trim(), dim: i % 2 === 1 }))}
+          className="display text-[11vw] leading-[0.85] sm:text-[6.5rem]"
+        />
 
         <Reveal delay={0.1}>
           <p className="max-w-md text-[0.95rem] leading-relaxed text-black/65">
@@ -107,7 +92,10 @@ export function Impact({
                 <span className="eyebrow flex items-center gap-2 text-black/60">
                   <span className="text-brand-ink">✳</span> {s.label}
                 </span>
-                <p className="display mt-8 text-6xl sm:text-7xl">{s.value}</p>
+                <Counter
+                  value={s.value}
+                  className="display mt-8 block text-6xl sm:text-7xl"
+                />
                 <p className="mt-4 text-sm leading-relaxed text-black/55">
                   {s.body}
                 </p>
@@ -193,11 +181,11 @@ export function Work({
       <Reveal>
         <SectionLabel>Portfolio</SectionLabel>
       </Reveal>
-      <Reveal>
-        <h2 className="display mt-6 text-[13vw] leading-[0.85] sm:text-[7.5rem]">
-          Selected <span className="text-black/45">work.</span>
-        </h2>
-      </Reveal>
+      <SplitLines
+        as="h2"
+        lines={[{ text: "Selected", tail: "work." }]}
+        className="display mt-6 text-[13vw] leading-[0.85] sm:text-[7.5rem]"
+      />
 
       <div className="mt-14">
         <ProjectGrid projects={shown} />
@@ -233,9 +221,12 @@ export function Services({ services }: { services: Service[] }) {
           <SectionLabel dark>
             Services ({String(services.length).padStart(2, "0")})
           </SectionLabel>
-          <h2 className="display mt-6 text-[12vw] leading-[0.85] sm:text-[6rem]">
-            What I <span className="text-white/35">do.</span>
-          </h2>
+          <SplitLines
+            as="h2"
+            lines={[{ text: "What I", tail: "do." }]}
+            dimClassName="text-white/35"
+            className="display mt-6 text-[12vw] leading-[0.85] sm:text-[6rem]"
+          />
         </Reveal>
         <Reveal delay={0.1}>
           <p className="max-w-md text-[0.95rem] leading-relaxed text-white/55">
@@ -249,12 +240,22 @@ export function Services({ services }: { services: Service[] }) {
       <div className="mt-16 border-t border-white/12">
         {services.map((s, i) => (
           <Reveal key={s.n + s.title} delay={(i % 3) * 0.06}>
-            <div className="group grid gap-4 border-b border-white/12 py-8 transition-colors hover:bg-white/[0.04] sm:grid-cols-[4rem_1fr_1.2fr] sm:items-start sm:gap-8 sm:px-4">
-              <span className="eyebrow text-white/55">{s.n}</span>
+            <div className="group relative grid gap-4 border-b border-white/12 py-8 transition-colors hover:bg-white/[0.04] sm:grid-cols-[4rem_1fr_1.2fr] sm:items-start sm:gap-8 sm:px-4">
+              {/* The row lights up from the top edge instead of just changing
+                  background, so the whole list reads as one instrument. */}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-y-0 left-0 w-[2px] origin-top scale-y-0 bg-brand transition-transform duration-500 ease-out group-hover:scale-y-100"
+              />
+              <span className="eyebrow text-white/55 transition-colors duration-300 group-hover:text-white">
+                {s.n}
+              </span>
               <h3 className="font-display text-2xl font-bold tracking-tight transition-transform duration-500 group-hover:translate-x-1 sm:text-3xl">
                 {s.title}
               </h3>
-              <p className="text-sm leading-relaxed text-white/55">{s.body}</p>
+              <p className="text-sm leading-relaxed text-white/55 transition-colors duration-300 group-hover:text-white/75">
+                {s.body}
+              </p>
             </div>
           </Reveal>
         ))}
@@ -316,9 +317,11 @@ export function Footer({ content }: { content: Content }) {
         </ul>
       </div>
 
-      <p className="display mt-10 text-center text-[19vw] leading-[0.8] text-white/90">
-        {site.name}
-      </p>
+      <SplitLines
+        as="p"
+        lines={[site.name]}
+        className="display mt-10 text-center text-[19vw] leading-[0.8] text-white/90"
+      />
 
       <div className="flex flex-wrap items-center justify-between gap-2 py-6 text-[0.7rem] uppercase tracking-[0.14em] text-white/55">
         <span>© 2026 {site.name}</span>
