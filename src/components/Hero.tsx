@@ -206,6 +206,7 @@ export default function Hero({
                     alt=""
                     fill
                     sizes="208px"
+                    quality={90}
                     className="object-cover"
                   />
                 ) : (

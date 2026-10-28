@@ -44,7 +44,8 @@ export default function ProjectCard({
     target: ref,
     offset: ["start end", "end start"],
   });
-  const imageY = useTransform(scrollYProgress, [0, 1], ["-6%", "6%"]);
+  // ±5% of a box 12% taller than the frame, so neither edge ever shows.
+  const imageY = useTransform(scrollYProgress, [0, 1], ["-5%", "5%"]);
 
   function track(e: React.PointerEvent<HTMLDivElement>) {
     const r = e.currentTarget.getBoundingClientRect();
@@ -80,7 +81,10 @@ export default function ProjectCard({
           href={`/work/${project.slug}`}
           className="block overflow-hidden border border-black/10 bg-white shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-shadow duration-500 group-hover:shadow-[0_30px_60px_-20px_rgba(0,0,0,0.35)]"
         >
-          <div className="relative aspect-16/11 overflow-hidden">
+          {/* 16:9 plus the 12% parallax margin is 16:10, the shape of the
+              screenshots — so cover fills the width without cropping the
+              sides, and the whole page header stays in view. */}
+          <div className="relative aspect-16/9 overflow-hidden">
             <motion.div
               className="parallax absolute inset-x-0 top-[-6%] h-[112%]"
               style={{ y: imageY }}
@@ -90,7 +94,8 @@ export default function ProjectCard({
                   src={project.image}
                   alt={project.title}
                   fill
-                  sizes="(max-width: 640px) 100vw, 45vw"
+                  sizes="(max-width: 640px) 100vw, 50vw"
+                  quality={90}
                   className="object-cover object-top transition-transform duration-[900ms] ease-out group-hover:scale-[1.06]"
                 />
               ) : (
