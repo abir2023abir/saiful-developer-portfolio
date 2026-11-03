@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { Archivo, Inter_Tight } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
@@ -74,6 +75,7 @@ export default async function RootLayout({
         <ScrollRail />
         <WhatsAppButton />
         {children}
+        <Analytics />
         <script
           type="application/ld+json"
           // Every field here is editable in the admin panel, so an unescaped
