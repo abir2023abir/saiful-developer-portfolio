@@ -5,13 +5,16 @@ import PageHeader from "@/components/PageHeader";
 import Reveal from "@/components/Reveal";
 import SplitLines from "@/components/SplitLines";
 import { ProjectGrid } from "@/components/sections";
+import JsonLd from "@/components/JsonLd";
 import { readContent } from "@/lib/content";
+import { breadcrumbJsonLd, pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Work",
+export const metadata: Metadata = pageMeta({
+  title: "Projects",
   description:
-    "Selected full-stack projects: ERP, SaaS dashboards, storefronts and realtime apps.",
-};
+    "Web applications Saiful Islam has shipped from Dhaka: stores, clinics, queues and export desks, built end to end in Next.js, Laravel and Node.",
+  path: "/work",
+});
 
 export default async function WorkPage() {
   const { projects } = await readContent();
@@ -19,6 +22,12 @@ export default async function WorkPage() {
 
   return (
     <PageShell>
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Projects", path: "/work" },
+        ])}
+      />
       <PageHeader
         label={`Portfolio (${String(projects.length).padStart(2, "0")})${live ? ` · ${live} live` : ""}`}
         title="Selected"

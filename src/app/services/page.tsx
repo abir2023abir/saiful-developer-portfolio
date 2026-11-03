@@ -5,19 +5,28 @@ import PageHeader from "@/components/PageHeader";
 import Reveal from "@/components/Reveal";
 import SplitLines from "@/components/SplitLines";
 import { Services } from "@/components/sections";
+import JsonLd from "@/components/JsonLd";
 import { readContent } from "@/lib/content";
+import { breadcrumbJsonLd, pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Services",
+export const metadata: Metadata = pageMeta({
+  title: "Web Development Services",
   description:
-    "Full-stack builds, e-commerce, API and database design, auth, realtime and performance.",
-};
+    "Full stack web development from Dhaka: applications, e-commerce, APIs and databases, authentication, realtime features and interface performance.",
+  path: "/services",
+});
 
 export default async function ServicesPage() {
   const { services } = await readContent();
 
   return (
     <PageShell>
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Services", path: "/services" },
+        ])}
+      />
       <PageHeader
         label="Services"
         title="What I"

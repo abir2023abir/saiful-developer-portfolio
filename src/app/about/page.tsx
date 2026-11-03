@@ -3,19 +3,28 @@ import PageShell from "@/components/PageShell";
 import PageHeader from "@/components/PageHeader";
 import Reveal from "@/components/Reveal";
 import { Impact, Marquee } from "@/components/sections";
+import JsonLd from "@/components/JsonLd";
 import { readContent } from "@/lib/content";
+import { breadcrumbJsonLd, pageMeta } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "About",
   description:
-    "How I work, what I build with, and what I will tell you before you commit.",
-};
+    "How Saiful Islam works as a full stack developer in Dhaka: the data model first, then the API, the auth, and the interface people actually use.",
+  path: "/about",
+});
 
 export default async function AboutPage() {
   const { site, stats, testimonials } = await readContent();
 
   return (
     <PageShell>
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "About", path: "/about" },
+        ])}
+      />
       <PageHeader
         label="About"
         title="The whole"

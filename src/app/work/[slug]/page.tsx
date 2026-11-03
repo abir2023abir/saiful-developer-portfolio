@@ -5,7 +5,9 @@ import PageShell from "@/components/PageShell";
 import Reveal from "@/components/Reveal";
 import SplitLines from "@/components/SplitLines";
 import ParallaxMedia from "@/components/ParallaxMedia";
+import JsonLd from "@/components/JsonLd";
 import { readContent } from "@/lib/content";
+import { breadcrumbJsonLd, pageMeta, projectJsonLd } from "@/lib/seo";
 import { whatsAppHref } from "@/lib/whatsapp";
 
 type Params = { params: Promise<{ slug: string }> };
@@ -34,16 +36,18 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const { projects } = await readContent();
   const project = projects.find((p) => p.slug === slug);
-  if (!project) return { title: "Not found" };
-  return {
-    title: `${project.title} — ${project.category}`,
+  if (!project) return { title: "Not found", robots: { index: false } };
+  return pageMeta({
+    title: project.title,
     description: project.summary,
-  };
+    path: `/work/${project.slug}`,
+    images: project.image ? [project.image] : undefined,
+  });
 }
 
 export default async function CaseStudy({ params }: Params) {
   const { slug } = await params;
-  const { projects } = await readContent();
+  const { projects, site } = await readContent();
   const index = projects.findIndex((p) => p.slug === slug);
   if (index === -1) notFound();
 
@@ -58,6 +62,16 @@ export default async function CaseStudy({ params }: Params) {
 
   return (
     <PageShell>
+      <JsonLd
+        data={[
+          breadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: "Projects", path: "/work" },
+            { name: project.title, path: `/work/${project.slug}` },
+          ]),
+          projectJsonLd(project, site.name),
+        ]}
+      />
       <header
         className="relative overflow-hidden px-6 pb-16 pt-20 sm:px-10 sm:pb-20 sm:pt-28"
         style={{

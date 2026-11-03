@@ -5,13 +5,16 @@ import SplitLines from "@/components/SplitLines";
 import ContactForm from "@/components/ContactForm";
 import { SectionLabel } from "@/components/sections";
 import { readContent } from "@/lib/content";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbJsonLd, pageMeta } from "@/lib/seo";
 import { WHATSAPP_DISPLAY, whatsAppHref } from "@/lib/whatsapp";
 
-export const metadata: Metadata = {
-  title: "Contact",
+export const metadata: Metadata = pageMeta({
+  title: "Hire a developer",
   description:
-    "Tell me what you are building. I reply with a scope, a timeline and the risky parts.",
-};
+    "Hire Saiful Islam, a full stack web developer in Shonir Akhra, Dhaka-1236. Send a brief, or message him on WhatsApp at 01410210153.",
+  path: "/contact",
+});
 
 /** Shonir Akhra, the quarter in Dhaka 1236. */
 const SHONIR_AKHRA = "23.70366,90.45088";
@@ -32,6 +35,12 @@ export default async function ContactPage() {
 
   return (
     <PageShell>
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Contact", path: "/contact" },
+        ])}
+      />
       <section id="contact" className="bg-paper px-6 py-20 sm:px-10 sm:py-28">
         <div className="grid gap-12 lg:grid-cols-[minmax(340px,400px)_1fr] lg:items-center">
           <Reveal>

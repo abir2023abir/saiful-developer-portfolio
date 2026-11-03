@@ -6,7 +6,9 @@ import SmoothScroll from "@/components/SmoothScroll";
 import Cursor from "@/components/Cursor";
 import ScrollRail from "@/components/ScrollRail";
 import WhatsAppButton from "@/components/WhatsAppButton";
+import JsonLd from "@/components/JsonLd";
 import { readContent } from "@/lib/content";
+import { siteJsonLd } from "@/lib/seo";
 import { siteUrl } from "@/lib/site-url";
 
 const archivo = Archivo({
@@ -22,23 +24,34 @@ const interTight = Inter_Tight({
 });
 
 const description =
-  "Full stack web developer building production-shaped web applications: Next.js, TypeScript, Node and Laravel, from the data model up to the interface.";
+  "Saiful Islam is a full stack web developer in Dhaka. He builds production web applications with Next.js, TypeScript, Node and Laravel, from the data model to the interface.";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { site } = await readContent();
-  const title = `${site.name} — ${site.role}`;
+  const title = `${site.name} — ${site.role} in Dhaka`;
 
   return {
     metadataBase: new URL(siteUrl()),
     title: { default: title, template: `%s — ${site.name}` },
     description,
-    alternates: { canonical: "/" },
+    authors: [{ name: site.name, url: siteUrl() }],
+    creator: site.name,
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+        "max-video-preview": -1,
+      },
+    },
     openGraph: {
       type: "website",
       siteName: site.name,
       title,
       description,
-      url: "/",
       locale: "en_US",
     },
     twitter: { card: "summary_large_image", title, description },
@@ -52,18 +65,6 @@ export default async function RootLayout({
 }) {
   const { site } = await readContent();
 
-  const person = {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    name: site.name,
-    jobTitle: site.role,
-    email: `mailto:${site.email}`,
-    url: siteUrl(),
-    address: { "@type": "PostalAddress", addressLocality: site.location },
-    knowsAbout: site.stack,
-    sameAs: [site.upwork, site.github, site.linkedin].filter(Boolean),
-  };
-
   return (
     <html lang="en" className={`${archivo.variable} ${interTight.variable}`}>
       <body>
@@ -76,14 +77,7 @@ export default async function RootLayout({
         <WhatsAppButton />
         {children}
         <Analytics />
-        <script
-          type="application/ld+json"
-          // Every field here is editable in the admin panel, so an unescaped
-          // "</script>" in any of them would break out of the tag.
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(person).replace(/</g, "\u003c"),
-          }}
-        />
+        <JsonLd data={siteJsonLd(site, description)} />
       </body>
     </html>
   );
