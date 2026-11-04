@@ -4,7 +4,7 @@ import PageShell from "@/components/PageShell";
 import PageHeader from "@/components/PageHeader";
 import Reveal from "@/components/Reveal";
 import SplitLines from "@/components/SplitLines";
-import { ProjectGrid } from "@/components/sections";
+import ProjectExplorer from "@/components/ProjectExplorer";
 import JsonLd from "@/components/JsonLd";
 import { readContent } from "@/lib/content";
 import { breadcrumbJsonLd, pageMeta } from "@/lib/seo";
@@ -35,7 +35,7 @@ export default async function WorkPage() {
         lede="Every one of these is a working application rather than a mockup — schema, API, auth and interface. The ones marked Live are running now: open one and visit the site yourself."
       />
       <section className="bg-paper px-6 pb-28 sm:px-10">
-        <ProjectGrid projects={projects} />
+        <ProjectExplorer projects={projects} />
       </section>
 
       <section className="border-t border-black/10 bg-paper px-6 py-24 text-center sm:px-10">
