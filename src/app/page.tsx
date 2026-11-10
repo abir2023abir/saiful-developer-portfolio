@@ -3,7 +3,8 @@ import HomeShell from "@/components/HomeShell";
 import { Impact, Marquee, Services, Work, Footer } from "@/components/sections";
 import { readContent } from "@/lib/content";
 import { navLinks } from "@/lib/nav";
-import { pageMeta } from "@/lib/seo";
+import JsonLd from "@/components/JsonLd";
+import { pageMeta, projectsJsonLd } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { site } = await readContent();
@@ -20,6 +21,7 @@ export default async function Home() {
 
   return (
     <>
+      <JsonLd data={projectsJsonLd(content.projects)} />
       <HomeShell content={content} links={navLinks(content)}>
         <Marquee stack={content.site.stack} />
         <Impact

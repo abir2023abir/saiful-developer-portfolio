@@ -7,7 +7,7 @@ import SplitLines from "@/components/SplitLines";
 import ProjectExplorer from "@/components/ProjectExplorer";
 import JsonLd from "@/components/JsonLd";
 import { readContent } from "@/lib/content";
-import { breadcrumbJsonLd, pageMeta } from "@/lib/seo";
+import { breadcrumbJsonLd, pageMeta, projectsJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = pageMeta({
   title: "Projects",
@@ -23,10 +23,13 @@ export default async function WorkPage() {
   return (
     <PageShell>
       <JsonLd
-        data={breadcrumbJsonLd([
-          { name: "Home", path: "/" },
-          { name: "Projects", path: "/work" },
-        ])}
+        data={[
+          breadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: "Projects", path: "/work" },
+          ]),
+          projectsJsonLd(projects),
+        ]}
       />
       <PageHeader
         label={`Portfolio (${String(projects.length).padStart(2, "0")})${live ? ` · ${live} live` : ""}`}

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import type { Project, SiteSettings } from "./types";
+import type { Project, Service, SiteSettings } from "./types";
 import { siteUrl } from "./site-url";
 
 type PageMeta = {
@@ -111,6 +111,42 @@ export function breadcrumbJsonLd(
       position: index + 1,
       name: crumb.name,
       item: `${origin}${crumb.path === "/" ? "" : crumb.path}`,
+    })),
+  };
+}
+
+export function projectsJsonLd(projects: Project[]) {
+  const origin = siteUrl();
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Web applications by Saiful Islam",
+    itemListElement: projects.map((project, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: project.title,
+      url: `${origin}/work/${project.slug}`,
+    })),
+  };
+}
+
+export function servicesJsonLd(services: Service[]) {
+  const origin = siteUrl();
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Full stack web development services in Dhaka",
+    itemListElement: services.map((service, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: {
+        "@type": "Service",
+        name: service.title,
+        description: service.body,
+        url: `${origin}/services`,
+        areaServed: { "@type": "City", name: "Dhaka" },
+        provider: { "@id": `${origin}/#person` },
+      },
     })),
   };
 }

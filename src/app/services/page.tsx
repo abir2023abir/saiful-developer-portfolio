@@ -7,7 +7,7 @@ import SplitLines from "@/components/SplitLines";
 import { Services } from "@/components/sections";
 import JsonLd from "@/components/JsonLd";
 import { readContent } from "@/lib/content";
-import { breadcrumbJsonLd, pageMeta } from "@/lib/seo";
+import { breadcrumbJsonLd, pageMeta, servicesJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = pageMeta({
   title: "Web Development Services",
@@ -22,10 +22,13 @@ export default async function ServicesPage() {
   return (
     <PageShell>
       <JsonLd
-        data={breadcrumbJsonLd([
-          { name: "Home", path: "/" },
-          { name: "Services", path: "/services" },
-        ])}
+        data={[
+          breadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: "Services", path: "/services" },
+          ]),
+          servicesJsonLd(services),
+        ]}
       />
       <PageHeader
         label="Services"
